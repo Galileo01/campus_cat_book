@@ -16,55 +16,41 @@ import vuex from '@wepy/x';
 
 wepy.use(vuex);
 
-
-wepy.app({
-  hooks: {
-    // App 级别 hook，对整个 App 生效
-    // 同时存在 Page hook 和 App hook 时，优先执行 Page hook，返回值再交由 App hook 处
-    'before-setData': function (dirty) {
-      console.log('setData dirty: ', dirty);
-      return dirty;
-    }
-  },
-  globalData: {
-    userInfo: null
-  },
-
-  onLaunch() {
-    this.testAsync();
-    eventHub.$on('app-launch', (...args) => {
-      console.log('app-launch event emitted, the params are:');
-      console.log(args);
-    });
-  },
-
-  methods: {
-
-    sleep (s) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve('promise resolved')
-        }, s * 1000)
-      })
-    },
-
-    async testAsync () {
-      let d = await this.sleep(3);
-      console.log(d);
-    }
-  }
-});
+wepy.app({});
 </script>
 <config>
 {
     pages: [
-      'pages/index'
+      'pages/index',"pages/profile","pages/community"
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'WeChat',
+      navigationBarTitleText: '校园猫猫图鉴',
       navigationBarTextStyle: 'black'
-    }
+    },
+    "tabBar": {
+    "list": [
+      {
+        "text": "查猫",
+        "pagePath": "pages/index",
+         "iconPath": "static/img/zhuye.png",
+         "selectedIconPath": "static/img/zhuye_s.png"
+      },
+      {
+        "text": "社区",
+        "pagePath": "pages/community",
+         "iconPath": "static/img/shequ.png",
+         "selectedIconPath": "static/img/shequ_s.png"
+      },
+      {
+        "text": "个人",
+        "pagePath": "pages/profile",
+         "iconPath": "static/img/wode.png",
+         "selectedIconPath": "static/img/wode_s.png"
+      }
+    ],
+    selectedColor:"#409EFF"
+  }
 }
 </config>

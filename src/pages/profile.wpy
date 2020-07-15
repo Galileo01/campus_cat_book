@@ -1,21 +1,18 @@
-
 <template>
   <div class="container">
-    主页
+    个人中心
   </div>
 </template>
 
 <script>
-  import wepy from '@wepy/core'
-  
+import wepy from '@wepy/core';
 
-  wepy.page({});
+wepy.page({});
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>
 <config>
 {
-  
+    navigationBarTitleText: '个人中心',
     usingComponents: {
      
     }
