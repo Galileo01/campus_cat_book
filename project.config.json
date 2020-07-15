@@ -1,0 +1,13 @@
+{
+  "description": "A WePY project",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram",
+  "appid": "wx6fe00c094a7df2ce",
+  "projectname": "campus_cat_book",
+  "miniprogramRoot": "./weapp"
+}
