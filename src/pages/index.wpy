@@ -1,23 +1,446 @@
-
 <template>
-  <div class="container">
-    主页
-  </div>
+  <view class="container home">
+    <van-search
+      class="search"
+      :value="key"
+      placeholder="请输入名字关键字"
+      shape="round"
+      use-action-slot
+      @search="searchClick"
+      @change="keyChange"
+    >
+      <van-icon
+        name="photograph"
+        slot="action"
+        color="#409EFF"
+        size="24px"
+        class="camera"
+        @tap="imgChooseClick"
+      />
+    </van-search>
+    <view class="content">
+      <view class="switch">
+        <text
+          :class="{ current: activeCate === 'study' }"
+          @tap="switchClick('study')"
+          >在校</text
+        >
+        <text
+          :class="{ current: activeCate === 'graduate' }"
+          @tap="switchClick('graduate')"
+          >毕业</text
+        >
+        <text
+          :class="{ current: activeCate === 'suspend' }"
+          @tap="switchClick('suspend')"
+          >休学</text
+        >
+      </view>
+      <view class="switch tabs-fixed" v-if="isFixed">
+        <text
+          :class="{ current: activeCate === 'study' }"
+          @tap="switchClick('study')"
+          >在校</text
+        >
+        <text
+          :class="{ current: activeCate === 'graduate' }"
+          @tap="switchClick('graduate')"
+          >毕业</text
+        >
+        <text
+          :class="{ current: activeCate === 'suspend' }"
+          @tap="switchClick('suspend')"
+          >休学</text
+        >
+      </view>
+      <view
+        class="items-wapper"
+        :class="{ 'full-screen': isFixed }"
+        v-if="!isshowResult"
+      >
+        <cat-item
+          v-for="(item, index) in showList"
+          :info="item"
+          :key="index"
+          @tap="itemTap(item.catID)"
+        ></cat-item>
+
+        <view class="empty-text">
+          <van-tag v-if="showList.length === 0">没有这个状态的猫猫</van-tag>
+        </view>
+      </view>
+    </view>
+    <van-toast id="van-toast" />
+    <!-- 图片来源选择 菜单-->
+    <van-action-sheet
+      :show="isshowchoose"
+      :actions="actions"
+      @close="sheetCloseHandler"
+      @select="selectHander"
+    />
+    <!--搜索结果-->
+    <van-popup
+      :show="isshowResult"
+      position="bottom"
+      :overlay="false"
+      closeable
+      custom-class="result-popup"
+      @close="popupCloseHandler"
+    >
+      <view class="result-wapper">
+        <cat-item
+          v-for="(item, index) in results"
+          :info="item"
+          :key="index"
+          @tap="itemTap(item.catID)"
+        ></cat-item>
+        <view class="empty-text">
+          <van-tag v-if="results.length === 0">搜索结果为空</van-tag>
+        </view>
+      </view>
+    </van-popup>
+  </view>
 </template>
-
-<script>
-  import wepy from '@wepy/core'
-  
-
-  wepy.page({});
-</script>
 <style lang="less">
+.home {
+  view {
+    font-size: 12px;
+  }
+  .camera {
+    display: flex; //图标居中
+  }
+  .van-search__action {
+    background-color: transparent; /*去除图标tap时背景 */
+  }
+  .items-wapper {
+    margin-top: 20rpx;
+  }
+  /*撑开 内容防止 内容区域高度不够 页面滚到顶*/
+  .full-screen {
+    height: 100vh;
+  }
+  .switch {
+    display: flex;
+    justify-content: space-around;
+    background-color: #f7f8fa;
+    text {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      height: 80rpx;
+      line-height: 80rpx;
+      width: 15%;
+      text-align: center;
+    }
+  }
+  .current {
+    color: #409eff;
+    border-bottom: 2px solid #409eff;
+  }
+  .current::after {
+    height: 2px;
+  }
+  .tabs-fixed {
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    z-index: 999;
+    background-color: #f7f8fa;
+  }
+  .empty-text {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .result-popup {
+    height: calc(100% - 98rpx);
+  }
+  .result-wapper {
+    margin-top: 20px;
+  }
+}
 </style>
+<script>
+import wepy from '@wepy/core';
+import Toast from '@/components/vant/toast/toast';
+wepy.page({
+  data: {
+    key: '',
+    activeCate: 'study',
+    //当前展示的分类  study/graduate/suspend 在校/毕业/休学
+    catlists: {
+      study: [],
+      graduate: [],
+      suspend: [],
+      all: [],
+    },
+    showList: [],
+    isFixed: false,
+
+    isshowchoose: false,
+    actions: [
+      {
+        name: '本地',
+        color: '#409EFF',
+        id: 0,
+      },
+      {
+        name: '拍摄',
+        color: '#409EFF',
+        id: 1,
+      },
+    ],
+    isshowResult: false,
+    results: [], //搜索结果
+  },
+
+  methods: {
+    getData() {
+      const data = [
+        {
+          catID: 0,
+          name: '大狐狸',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          location: '竹轩',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+        {
+          catID: 1,
+          name: '大狐狸',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          location: '竹轩',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+        {
+          catID: 2,
+          name: '大狐狸',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          location: '竹轩',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+        {
+          catID: 3,
+          name: '大狐狸',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          location: '竹轩',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+        {
+          catID: 4,
+          name: '大狐狸',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          location: '竹轩',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+      ];
+      const data1 = [
+        {
+          catID: 5,
+          name: '666',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          location: '竹轩',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+        {
+          catID: 6,
+          name: '777',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          location: '竹轩',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+        {
+          catID: 7,
+          name: '666',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          location: '竹轩',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+        {
+          catID: 8,
+          name: '888',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          location: '竹轩',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+        {
+          catID: 9,
+          name: '666',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          location: '竹轩',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+      ];
+      this.catlists.study = [...data, ...data];
+      this.catlists.graduate = [...data1, ...data1, ...data1];
+      this.showList = this.catlists.study;
+      this.catlists.all = [
+        ...this.catlists.study,
+        ...this.catlists.graduate,
+        ...this.catlists.suspend,
+      ];
+    },
+    //手动进行数据的双向绑定
+    keyChange({ $wx: { detail } }) {
+      this.key = detail;
+    },
+    //进行搜索
+    searchClick() {
+      if (this.key) {
+        this.results = this.catlists.all.filter((item) =>
+          item.name.includes(this.key)
+        );
+
+        this.showResults();
+      } else Toast.fail('关键字为空');
+    },
+    showResults() {
+      this.isshowResult = true;
+    },
+    popupCloseHandler() {
+      this.isshowResult = false;
+    },
+    //选择 图片
+    imgChooseClick() {
+      this.isshowchoose = true;
+    },
+    sheetCloseHandler() {
+      this.isshowchoose = false;
+    },
+    selectHander(e) {
+      const select = e.$wx.detail.id;
+      const types = ['album', 'camera'];
+      wx.chooseImage({
+        count: 1,
+        sizeType: ['original'],
+        sourceType: [types[select]],
+        success(res) {
+          // tempFilePath可以作为img标签的src属性显示图片
+          const tempFilePaths = res.tempFilePaths;
+          console.log(tempFilePaths);
+          Toast.fail('图片选择成功');
+        },
+        fail(err) {
+          console.log(err);
+          Toast.fail('图片选择失败');
+        },
+      });
+    },
+    switchClick(cate) {
+      this.activeCate = cate;
+      this.showList = this.catlists[cate];
+    },
+    itemTap(id) {
+      console.log(id);
+      this.$navigate('/pages/catdetail?id=' + id);
+    },
+  },
+
+  onLoad() {
+    this.getData();
+  },
+  //绑定节流函数，减少性能消耗 ,使用普通函数，保存this
+  onPageScroll({ scrollTop }) {
+    if (scrollTop > 54) this.isFixed = true;
+    else {
+      this.isFixed = false;
+    }
+  },
+});
+</script>
 <config>
 {
   
     usingComponents: {
-     
+    'van-button':'../components/vant/button',
+    'van-icon':'../components/vant/icon',
+    'van-search':'../components/vant/search',
+    "van-toast": '../components/vant/toast',
+    "van-tag":'../components/vant/tag',
+    "van-action-sheet":'../components/vant/action-sheet',
+     "van-popup":'../components/vant/popup',
+
+    "cat-item": '../components/com/cat_item',
+    
     }
 }
 </config>

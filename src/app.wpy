@@ -3,9 +3,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
+  
 }
 </style>
 
@@ -21,13 +19,16 @@ wepy.app({});
 <config>
 {
     pages: [
-      'pages/index',"pages/profile","pages/community"
+      'pages/catdetail',
+      'pages/index',"pages/profile","pages/community",
+      
     ],
     window: {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
+      navigationBarBackgroundColor: '#409EFF',
       navigationBarTitleText: '校园猫猫图鉴',
-      navigationBarTextStyle: 'black'
+      navigationBarTextStyle: 'white',
+    
     },
     "tabBar": {
     "list": [
@@ -44,7 +45,7 @@ wepy.app({});
          "selectedIconPath": "static/img/shequ_s.png"
       },
       {
-        "text": "个人",
+        "text": "我的",
         "pagePath": "pages/profile",
          "iconPath": "static/img/wode.png",
          "selectedIconPath": "static/img/wode_s.png"

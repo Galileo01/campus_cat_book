@@ -1,0 +1,193 @@
+<template>
+  <view class="cat-detail">
+    <image :src="baseInfo.img"></image>
+    <view class="baseInfo">
+      <van-row>
+        <van-col span="12" offset="1"
+          ><van-tag plain type="primary" size="medium">名字 :</van-tag
+          ><text> {{ baseInfo.name }}</text></van-col
+        >
+        <van-col span="11"
+          ><van-tag plain type="primary" size="medium">性别 :</van-tag
+          ><text> {{ baseInfo.sex }}</text></van-col
+        >
+      </van-row>
+      <van-row>
+        <van-col span="12" offset="1"
+          ><van-tag plain type="primary" size="medium">毛色 :</van-tag
+          ><text> {{ baseInfo.color }}</text></van-col
+        >
+        <van-col span="11"
+          ><van-tag plain type="primary" size="medium">绝育情况 :</van-tag
+          ><text> {{ sterilized }}</text></van-col
+        >
+      </van-row>
+      <van-row>
+        <van-col span="12" offset="1"
+          ><van-tag plain type="primary" size="medium">状态 :</van-tag
+          ><text> {{ stateText }}</text></van-col
+        >
+        <van-col span="11"
+          ><van-tag plain type="primary" size="medium">出生时间 :</van-tag
+          ><text> {{ baseInfo.birthday }}</text></van-col
+        >
+      </van-row>
+      <van-row>
+        <van-col span="12" offset="1"
+          ><van-tag plain type="primary" size="medium">目击时间 :</van-tag
+          ><text> {{ baseInfo.witnessTime }}</text></van-col
+        >
+        <van-col span="11"
+          ><van-tag plain type="primary" size="medium">变更时间 :</van-tag
+          ><text> {{ baseInfo.changeTime }}</text></van-col
+        >
+      </van-row>
+      <van-row>
+        <van-col span="23" offset="1"
+          ><van-tag plain type="primary" size="medium">外貌特征 :</van-tag
+          ><text> {{ baseInfo.appearance }}</text></van-col
+        >
+      </van-row>
+      <van-row>
+        <van-col span="23" offset="1"
+          ><van-tag plain type="primary" size="medium">性格特征 :</van-tag
+          ><text> {{ baseInfo.character }}</text></van-col
+        >
+      </van-row>
+      <van-row>
+        <van-col span="4" offset="1"
+          ><van-tag plain type="primary" size="medium">位置 :</van-tag></van-col
+        >
+        <van-col col="18">
+          <text> {{ baseInfo.location }}</text>
+          <van-icon name="location"></van-icon>
+        </van-col>
+      </van-row>
+    </view>
+    <view class="imgs">
+      <view>更多照片</view>
+      <image v-for="(item, index) in imgs" :key="index" :src="item"></image>
+    </view>
+    <view class="box">
+      <view class="icon" @tap="submitClick">
+        <van-icon name="edit" size="60rpx" />
+        <text>分享动态</text>
+      </view>
+      <view class="icon" @tap="collectClick">
+        <van-icon :name="isCollected ? 'star' : 'star-o'" size="60rpx" />
+        <text>收藏</text>
+      </view>
+    </view>
+    <van-toast id="van-toast" />
+  </view>
+</template>
+<style lang="less">
+.cat-detail {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  image {
+    width: 100vw;
+  }
+  .baseInfo {
+    margin-top: 20rpx;
+    .van-row {
+      margin-top: 20rpx;
+    }
+  }
+  .imgs {
+    margin-top: 20rpx;
+    view {
+      margin-bottom: 20rpx;
+    }
+    margin-bottom: 90rpx;
+  }
+  .box {
+    position: fixed;
+    bottom: 0;
+    background-color: #fff;
+    height: 90rpx;
+    width: 100vw;
+    display: flex;
+    justify-content: space-around;
+    .icon {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      font-size: 12px;
+    }
+  }
+}
+</style>
+<script>
+import wepy from '@wepy/core';
+import Toast from '@/components/vant/toast/toast';
+wepy.page({
+  data: {
+    baseInfo: {},
+    id: 0,
+    imgs: [
+      'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+      'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+      'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+      'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+    ],
+    isCollected: false, //是否已经收藏，
+  },
+  methods: {
+    getData() {
+      this.baseInfo = {
+        catID: 0,
+        name: '大狐狸',
+        img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+        sex: '雄性',
+        color: '黑白相间',
+        state: 0,
+        sterilized: false, //绝育情况
+        birthday: '2018.08.22',
+        location: '竹轩',
+        changeTime: '2019.08.22', //状改变的时间，
+        witnessTime: '2018.08.28', //第一次目击时间
+        appearance: '黑白相间',
+        character: '大方，不怕生', //个性特征
+      };
+    },
+    submitClick() {},
+    //点击收藏
+    collectClick() {
+      if (this.isCollected) {
+        Toast('收藏夹中已存在');
+      } else {
+        Toast.success('收藏成功');
+        this.isCollected = true;
+      }
+    },
+  },
+  computed: {
+    stateText() {
+      const states = ['在校', '毕业', '休学'];
+      return states[this.baseInfo.state];
+    },
+    sterilized() {
+      return this.baseInfo.sterilized ? '已' : '未' + '绝育';
+    },
+  },
+  onLoad(query) {
+    console.log(query);
+    this.id = query.id;
+    this.getData();
+  },
+});
+</script>
+
+<config>
+{
+ navigationBarTitleText: '猫猫详情',
+  usingComponents: {
+    'van-row':'../components/vant/row',
+    'van-col':'../components/vant/col',
+    'van-tag':'../components/vant/tag',
+     'van-icon':'../components/vant/icon',
+     "van-toast": '../components/vant/toast',
+  }
+}</config>

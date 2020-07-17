@@ -1,0 +1,16 @@
+<template>
+  <view>
+    识别结果
+  </view>
+</template>
+
+<script>
+import wepy from '@wepy/core';
+wepy.page({});
+</script>
+
+<style lang="less"></style>
+<config>
+{
+}
+</config>

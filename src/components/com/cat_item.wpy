@@ -1,0 +1,61 @@
+<template>
+  <view class="cat-item">
+    <image :src="info.img"></image>
+    <view class="desc"
+      ><text class="name">{{ info.name }}</text>
+      <!-- <text class="location">{{ info.location }}</text> -->
+      </view
+    >
+    <van-icon name="arrow" color="#409EFF" class="arrow" />
+  </view>
+</template>
+<style lang="less">
+.cat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin: 0 70rpx 10rpx 70rpx;
+  padding: 5px;
+  border-bottom: 1px solid #ebedf0;
+  image {
+    height: 90rpx;
+    width: 90rpx;
+    border-radius: 50%;
+  }
+  .desc {
+    margin-left: 60rpx;
+    font-size: 13px;
+    text.location {
+      margin-left: 30rpx;
+      font-size: 10px;
+    }
+  }
+  .arrow {
+    height: 60rpx;
+    width: 60rpx;
+    margin-left: 60rpx;
+  }
+}
+</style>
+
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  props: {
+    info: {
+      type: Object,
+    },
+  },
+  created() {
+    // console.log(this);
+  },
+});
+</script>
+
+<config>
+{
+ usingComponents: {
+      'van-icon':'../vant/icon',
+ }
+}
+</config>
