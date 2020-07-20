@@ -1,0 +1,191 @@
+<template>
+  <view class="createtweet_page">
+    <view class="content">
+      <view class="texts">
+        <textarea
+          model:value="{{text}}"
+          placeholder="分享新鲜事"
+          placeholder-class="placeholder"
+        ></textarea>
+        <text class="count">{{ text.length }}/140</text>
+        <view class="imgs">
+          <image v-for="(item, index) in imgs" :src="item" :key="index"></image>
+        </view>
+        <view class="video"></view>
+      </view>
+    </view>
+    <view class="btns">
+      <van-icon name="photo-o" size="60rpx" @tap="showChoose('img')"></van-icon>
+      <van-icon
+        name="video-o"
+        size="60rpx"
+        @tap="showChoose('video')"
+      ></van-icon>
+      <van-icon
+        name="passed"
+        size="60rpx"
+        class="passed"
+        color="#fff"
+      ></van-icon>
+      <view class="jinghao">
+        #
+      </view>
+      <van-icon name="location-o" size="60rpx"></van-icon>
+    </view>
+    <van-action-sheet
+      :show="isshowchoose"
+      :actions="actions"
+      @close="sheetCloseHandler"
+      @select="selectHander"
+      :title="mediaType === 'img' ? '图片来源' : '视频来源'"
+    />
+  </view>
+</template>
+<style lang="less">
+.createtweet_page {
+  font-size: 13px;
+  .content {
+    .texts {
+      padding: 20rpx;
+      border: 1px solid red;
+      textarea {
+        max-height: 30%;
+        width: 100%;
+        display: block;
+      }
+      .placeholder {
+        color: #a497a6;
+      }
+      .count {
+        color: #a497a6;
+        font-size: 12px;
+      }
+    }
+  }
+  .btns {
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    // height:70rpx;
+    padding: 10rpx 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: rgb(249, 249, 249);
+    .passed {
+      background-color: #409eff;
+      border-radius: 50%;
+      height: 60rpx;
+      width: 60rpx;
+    }
+    .jinghao {
+      font-size: 60rpx;
+      color: #3b3c32;
+    }
+  }
+}
+</style>
+<script>
+import wepy from '@wepy/core';
+wepy.page({
+  data: {
+    type: 'plain', //新建动态的模式
+    text: '',
+    wrodCount: 0,
+    imgs: [],
+    video: '',
+    mediaSrcType: 'album', //图片和视频的来源
+    mediaType: 'img', //当前选择的 媒体类型
+    isshowchoose: false, //是否显示选择菜单
+    actions: [
+      //菜单选项
+      {
+        name: '本地',
+        id: 0,
+      },
+      {
+        name: '拍摄',
+        id: 1,
+      },
+    ],
+  },
+  computed: {
+    imgLength() {
+      return this.imgs.length;
+    },
+  },
+  /*TODO: 
+  1.按照tweetitem 图片宽度的计算方式，
+  2.编写 添加图片或者添加视频的按钮，两者只能选一个添加
+  
+  */
+  methods: {
+    onClickLeft() {
+      this.$back();
+    },
+    textInput() {},
+    chooseImg() {
+      const self = this;
+      console.log(this.mediaSrcType);
+      wx.chooseImage({
+        sizeType: ['original'],
+        sourceType: this.mediaSrcType,
+        success(res) {
+          const tempFilePaths = res.tempFilePaths;
+          console.log(tempFilePaths);
+          self.imgs = tempFilePaths;
+        },
+      });
+    },
+    chooseVideo() {
+      const self = this;
+      console.log(this.mediaSrcType);
+      wx.chooseVideo({
+        sourceType: this.mediaSrcType,
+        maxDuration: 120,
+        camera: 'back',
+        success(res) {
+          const tempFilePaths = res.tempFilePaths;
+          console.log(tempFilePaths, self);
+        },
+      });
+    },
+    showChoose(type = 'img') {
+      this.mediaType = type;
+      this.isshowchoose = true;
+    },
+    sheetCloseHandler() {
+      this.isshowchoose = false;
+    },
+    selectHander(e) {
+      const select = e.$wx.detail.id;
+      const types = ['album', 'camera'];
+      this.mediaSrcType = types[select];
+      if (this.mediaType === 'img') {
+        this.chooseImg();
+      } else {
+        this.chooseVideo();
+      }
+    },
+  },
+  onLoad({ type }) {
+    console.log(type);
+    if (type) {
+      this.type = type;
+      if (type !== 'plain') {
+        //进入页面时 已经选好 媒体类型，显示选择框
+        this.showChoose(type);
+      }
+    }
+  },
+});
+</script>
+<config>
+{
+  navigationBarTitleText: '新建动态',
+   usingComponents: {
+  "van-icon": '../components/vant/icon',
+   "van-action-sheet": '../components/vant/action-sheet',
+   }
+}
+</config>

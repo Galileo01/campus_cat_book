@@ -1,15 +1,12 @@
 <style lang="less">
 .container {
-  height: 100%;
   display: flex;
   flex-direction: column;
-  
 }
 </style>
 
 <script>
 import wepy from '@wepy/core';
-import eventHub from './common/eventHub';
 import vuex from '@wepy/x';
 
 wepy.use(vuex);
@@ -19,8 +16,11 @@ wepy.app({});
 <config>
 {
     pages: [
-      'pages/catdetail',
-      'pages/index',"pages/profile","pages/community",
+      'pages/createtweet_page',
+     "pages/community",
+      'pages/index',
+      'pages/profile',
+     'pages/catdetail',
       
     ],
     window: {
@@ -35,20 +35,20 @@ wepy.app({});
       {
         "text": "查猫",
         "pagePath": "pages/index",
-         "iconPath": "static/img/zhuye.png",
-         "selectedIconPath": "static/img/zhuye_s.png"
+         "iconPath": "assets/img/zhuye.png",
+         "selectedIconPath": "assets/img/zhuye_s.png"
       },
       {
         "text": "社区",
         "pagePath": "pages/community",
-         "iconPath": "static/img/shequ.png",
-         "selectedIconPath": "static/img/shequ_s.png"
+         "iconPath": "assets/img/shequ.png",
+         "selectedIconPath": "assets/img/shequ_s.png"
       },
       {
         "text": "我的",
         "pagePath": "pages/profile",
-         "iconPath": "static/img/wode.png",
-         "selectedIconPath": "static/img/wode_s.png"
+         "iconPath": "assets/img/wode.png",
+         "selectedIconPath": "assets/img/wode_s.png"
       }
     ],
     selectedColor:"#409EFF"

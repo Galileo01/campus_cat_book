@@ -4,12 +4,17 @@ var prod = process.env.NODE_ENV === 'production';
 module.exports = {
   wpyExt: '.wpy',
   cliLogs: !prod,
-  static: ['static'],
+  static: ['src/assets'],
   build: {
   },
   resolve: {
     alias: {
-      '@': path.join(__dirname, 'src')
+      '@': path.resolve(__dirname, 'src'),
+      'assets': path.resolve(__dirname, 'src/assets'),
+      'common':path.resolve(__dirname, 'src/common'),
+      'network':path.resolve(__dirname, 'src/network'),
+      'components':path.resolve(__dirname, 'src/components'),
+      
     },
     aliasFields: ['wepy', 'weapp'],
     modules: ['node_modules']

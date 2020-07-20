@@ -14,9 +14,10 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  margin: 0 70rpx 10rpx 70rpx;
+  margin: 20rpx 70rpx 10rpx 70rpx;
   padding: 5px;
   border-bottom: 1px solid #ebedf0;
+   background-color: #fff;
   image {
     height: 90rpx;
     width: 90rpx;

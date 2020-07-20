@@ -1,0 +1,53 @@
+<template>
+  <view class="back_top" @tap="backTop" :style="{ bottom: bottom + 'rpx' }">
+    <image src="./backtop.png"></image>
+  </view>
+</template>
+
+<style lang="less">
+.back_top {
+  position: fixed;
+  z-index: 99;
+  // bottom: 40rpx;
+  right: 10rpx;
+  width: 64rpx;
+  height: 64rpx;
+
+  image {
+    display: block;
+    width: 64rpx;
+    height: 64rpx;
+  }
+}
+</style>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  props: {
+    bottom: {
+      type: String,
+      default: '40',
+    },//距离底端距离
+  },
+  methods: {
+    //回到页面
+    backTop() {
+      const self = this;
+      wx.pageScrollTo({
+        scrollTop: 0,
+        success() {
+          //成功之后 隐藏
+          setTimeout(() => {
+            self.$emit('hide');
+          }, 300);
+        },
+      });
+    },
+  },
+});
+</script>
+<config>
+{
+
+}
+</config>

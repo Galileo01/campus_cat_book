@@ -1,7 +1,11 @@
 <template>
   <view class="cat-detail">
-    <image :src="baseInfo.img"></image>
+    <!-- <image :src="baseInfo.img"></image> -->
+    <van-image fit="widthFix" width="100vw" :src="baseInfo.img" use-error-slot>
+      <text slot="error">加载失败</text>
+    </van-image>
     <view class="baseInfo">
+      <text>基础信息 :</text>
       <van-row>
         <van-col span="12" offset="1"
           ><van-tag plain type="primary" size="medium">名字 :</van-tag
@@ -43,6 +47,15 @@
         >
       </van-row>
       <van-row>
+        <van-col span="4" offset="1"
+          ><van-tag plain type="primary" size="medium">学校 :</van-tag></van-col
+        >
+        <van-col col="18">
+          <text> {{ baseInfo.campus }}</text>
+          <van-icon name="location" class="location-btn"></van-icon>
+        </van-col>
+      </van-row>
+      <van-row>
         <van-col span="23" offset="1"
           ><van-tag plain type="primary" size="medium">外貌特征 :</van-tag
           ><text> {{ baseInfo.appearance }}</text></van-col
@@ -60,13 +73,23 @@
         >
         <van-col col="18">
           <text> {{ baseInfo.location }}</text>
-          <van-icon name="location"></van-icon>
+          <van-icon name="location" class="location-btn"></van-icon>
         </van-col>
       </van-row>
     </view>
     <view class="imgs">
-      <view>更多照片</view>
-      <image v-for="(item, index) in imgs" :key="index" :src="item"></image>
+      <view>更多照片 :</view>
+      <!-- <image v-for="(item, index) in imgs" :key="index" :src="item"></image> -->
+      <van-image
+        fit="widthFix"
+        width="100vw"
+        v-for="(item, index) in imgs"
+        :key="index"
+        :src="item"
+        use-error-slot
+      >
+        <text slot="error">加载失败</text>
+      </van-image>
     </view>
     <view class="box">
       <view class="icon" @tap="submitClick">
@@ -79,6 +102,11 @@
       </view>
     </view>
     <van-toast id="van-toast" />
+    <back-top
+      v-if="backTopVisible"
+      @hide="backTopVisible = false"
+      bottom="120"
+    ></back-top>
   </view>
 </template>
 <style lang="less">
@@ -86,13 +114,18 @@
   display: flex;
   flex-direction: column;
   font-size: 13px;
+
   image {
     width: 100vw;
   }
   .baseInfo {
     margin-top: 20rpx;
+
     .van-row {
       margin-top: 20rpx;
+    }
+    .location-btn {
+      margin-left: 20rpx;
     }
   }
   .imgs {
@@ -133,12 +166,14 @@ wepy.page({
       'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
     ],
     isCollected: false, //是否已经收藏，
+    backTopVisible: false,
   },
   methods: {
     getData() {
       this.baseInfo = {
         catID: 0,
         name: '大狐狸',
+        campus: 'cqut',
         img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
         sex: '雄性',
         color: '黑白相间',
@@ -162,6 +197,8 @@ wepy.page({
         this.isCollected = true;
       }
     },
+    //在地图上显示 对应的位置
+    locationClick() {},
   },
   computed: {
     stateText() {
@@ -177,6 +214,13 @@ wepy.page({
     this.id = query.id;
     this.getData();
   },
+  //引入节流 函数，减少触发次数
+  onPageScroll({ scrollTop }) {
+    // console.log(scrollTop);
+    if (scrollTop > 300) {
+      this.backTopVisible = true;
+    } else this.backTopVisible = false;
+  },
 });
 </script>
 
@@ -187,7 +231,10 @@ wepy.page({
     'van-row':'../components/vant/row',
     'van-col':'../components/vant/col',
     'van-tag':'../components/vant/tag',
-     'van-icon':'../components/vant/icon',
-     "van-toast": '../components/vant/toast',
+    'van-icon':'../components/vant/icon',
+    "van-toast": '../components/vant/toast',
+    "van-image": '../components/vant/image',
+     'back-top':'../components/com/back_top/back_top',
+     
   }
 }</config>

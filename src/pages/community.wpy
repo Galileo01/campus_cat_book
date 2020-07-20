@@ -1,23 +1,436 @@
-
 <template>
-  <div class="container">
-    社区
-  </div>
+  <view class="community container">
+    <view class="content">
+      <tweet-item
+        :item="item"
+        v-for="(item, index) in showlist"
+        :key="index"
+        @collect="collectTap"
+        @comment="commentTap"
+        @star="starTap"
+        @enlarge="enlargeTap"
+      ></tweet-item>
+    </view>
+    <view class="add" @tap="addTap">
+      <van-icon name="add-o" size="50rpx" color="#fff" />
+    </view>
+    <view class="tweet-btns" :class="{ 'btns-show': btnsVisible }">
+      <view class="triangle"></view>
+      <view class="btns">
+        <view class="btn" hover-class="btn-hover" @tap="newATweet()"
+          ><van-icon name="edit" size="14px"></van-icon> <text>动态</text></view
+        >
+        <view class="btn" hover-class="btn-hover" @tap="newATweet('img')"
+          ><van-icon name="photo-o" size="14px"></van-icon>
+          <text>图片</text></view
+        >
+        <view class="btn" hover-class="btn-hover" @tap="newATweet('video')"
+          ><van-icon name="video-o" size="14px"></van-icon>
+          <text>视频</text></view
+        >
+      </view>
+    </view>
+    <view class="bottom"><van-tag plain>到底了</van-tag></view>
+    <van-popup :show="imgDialogVisible" @close="closeImgDialog" closeable>
+      <view class="preview">
+        <image :src="imgSrc"></image>
+        <view class="download">
+          <van-icon name="down" size="40rpx" color="#fff" @tap="downloadImg" />
+        </view>
+      </view>
+    </van-popup>
+    <van-toast id="van-toast" />
+    <back-top v-if="backTopVisible" @hide="backTopVisible = false"></back-top>
+  </view>
 </template>
-
-<script>
-  import wepy from '@wepy/core'
-  
-
-  wepy.page({});
-</script>
 <style lang="less">
+.community {
+  background-color: #f7f8fa;
+  font-size: 13px;
+  image {
+    display: block;
+  }
+  .add {
+    position: fixed;
+    z-index: 3;
+    right: 10rpx;
+    top: 10rpx;
+    .van-icon {
+      background-color: #409eff;
+      border-radius: 50%;
+    }
+  }
+  .tweet-btns {
+    position: fixed;
+    z-index: 4;
+    right: 10rpx;
+    display: none;
+    top: 76rpx;
+    font-size: 14px;
+    color: #fff;
+    border-radius: 4rpx;
+    border: 2rpx solid #409eff;
+    background-color: #409eff;
+    transition: all linear 0.5s;
+    .triangle {
+      height: 0;
+      width: 0;
+      border: 16rpx solid;
+      border-top-color: transparent;
+      border-left-color: transparent;
+      border-right-color: transparent;
+      border-bottom-color: #409eff;
+      position: absolute;
+      top: -32rpx;
+      right: 12rpx;
+    }
+    .btns {
+      width: 180rpx;
+      display: flex;
+      flex-direction: column;
+
+      .btn {
+        padding: 10rpx;
+        width: 180rpx;
+        height: 70rpx;
+        box-sizing: border-box;
+
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+      .btn-hover {
+        background-color: #fff;
+        color: #409eff;
+      }
+    }
+  }
+  .btns-show {
+    display: block;
+  }
+
+  .bottom {
+    font-size: 10px;
+    color: #a497a6;
+    text-align: center;
+  }
+  .preview {
+    background-color: rgba(0, 0, 0, 0.7); /*和遮罩层 颜色一致 */
+    .download {
+      background-color: none;
+      .van-icon {
+        position: absolute;
+        right: 16px;
+        bottom: 40rpx;
+        color: #fff;
+      }
+    }
+  }
+  .van-popup .van-icon {
+    color: #fff;
+  }
+}
 </style>
+<script>
+import wepy from '@wepy/core';
+import Toast from 'components/vant/toast/toast';
+wepy.page({
+  data: {
+    showlist: [],
+    allTweets: [],
+    imgDialogVisible: false,
+    imgSrc: '',
+    currentLength: 0,
+    backTopVisible: false,
+    btnsVisible: false,
+    timer: null, //bnt自动隐藏的延时器
+  },
+  methods: {
+    getData() {
+      const src = [
+        'https://wx2.sinaimg.cn/mw690/6cd6d028ly4ggv1ek5z72j20c80c8aas.jpg',
+        'https://wx3.sinaimg.cn/mw690/6b1394a6gy1ggwmxfa7v7j20go09djxt.jpg',
+      ];
+      const index = parseInt(Math.random() * 2);
+      const list = [
+        {
+          userinfo: {
+            name: 'user1',
+            campus: 'cqut',
+            avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+          },
+          tweetTime: '2020.07.14 20:22',
+          collectCount: 5,
+          transmitCount: 0,
+          commentCount: 5,
+          starCount: 6,
+          id: 0,
+          text: '毕业了',
+          imgs: [src[index]],
+          video: '',
+        },
+        {
+          userinfo: {
+            name: 'user1',
+            campus: 'cqut',
+            avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+          },
+          tweetTime: '2020.07.14 20:22',
+          collectCount: 5,
+          transmitCount: 0,
+          commentCount: 5,
+          starCount: 6,
+          id: 1,
+          text: '毕业了',
+          imgs: [],
+          video:
+            'https://f.video.weibocdn.com/TZHNe9o7lx07ESUanuiQ0104120323oJ0E020.mp4?label=mp4_1080p&template=1920x1080.25.0&trans_finger=daa7c63436091a9dfe20e4b554312cac&ori=2&Expires=1595165248&ssig=4a%2Fv8rCLP0&KID=unistore,video',
+        },
+        {
+          userinfo: {
+            name: 'user1',
+            campus: 'cqut',
+            avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+          },
+          tweetTime: '2020.07.14 20:22',
+          collectCount: 5,
+          transmitCount: 0,
+          commentCount: 5,
+          starCount: 6,
+          id: 2,
+          text: '毕业了',
+          imgs: [src[index], src[index]],
+          video: '',
+        },
+        {
+          userinfo: {
+            name: 'user1',
+            campus: 'cqut',
+            avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+          },
+          tweetTime: '2020.07.14 20:22',
+          collectCount: 5,
+          transmitCount: 0,
+          commentCount: 5,
+          starCount: 6,
+          id: 3,
+          text: '毕业了',
+          imgs: [src[index], src[index], src[index]],
+          video: '',
+        },
+        {
+          userinfo: {
+            name: 'user1',
+            campus: 'cqut',
+            avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+          },
+          tweetTime: '2020.07.14 20:22',
+          collectCount: 5,
+          transmitCount: 0,
+          commentCount: 5,
+          starCount: 6,
+          id: 4,
+          text: '毕业了',
+          imgs: [src[index], src[index], src[index], src[index]],
+          video: '',
+        },
+        {
+          userinfo: {
+            name: 'user1',
+            campus: 'cqut',
+            avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+          },
+          tweetTime: '2020.07.14 20:22',
+          collectCount: 5,
+          transmitCount: 0,
+          commentCount: 5,
+          starCount: 6,
+          id: 4,
+          text: '毕业了',
+          imgs: [src[index], src[index], src[index], src[index], src[index]],
+          video: '',
+        },
+      ];
+      this.allTweets = list;
+      this.showlist = list.slice(0, 10); //默认展示前 10条
+      this.currentLength = this.showlist.length;
+    },
+    //收藏某个 动态
+    collectTap(id) {
+      if (this.btnsVisible) this.hideBtns();
+      console.log(id, 'collect');
+      Toast('收藏成功');
+    },
+    //点击评论，进入动态详情页
+    commentTap(id) {
+      if (this.btnsVisible) this.hideBtns();
+      console.log(id, 'comment');
+    },
+    starTap(id) {
+      if (this.btnsVisible) this.hideBtns();
+      console.log(id, 'star');
+      Toast('点赞成功');
+    },
+    //点击图片放大
+    enlargeTap(src) {
+      // console.log(src);
+      if (this.btnsVisible) this.hideBtns();
+      this.imgSrc = src;
+      this.imgDialogVisible = true;
+    },
+    closeImgDialog() {
+      this.imgDialogVisible = false;
+      this.$nextTick(() => {
+        this.imgSrc = '';
+      });
+    },
+    //下载图片到本地
+    downloadImg() {
+      wx.getImageInfo({
+        src: this.imgSrc,
+        success: function (ret) {
+          var path = ret.path;
+          wx.saveImageToPhotosAlbum({
+            filePath: path,
+            success(result) {
+              console.log(result);
+              Toast('保存成功');
+            },
+          });
+        },
+      });
+    },
+    showBtns() {
+      this.btnsVisible = true;
+    },
+    hideBtns() {
+      this.btnsVisible = false;
+    },
+    addTap() {
+      if (this.btnsVisible) {
+        this.hideBtns();
+      } else {
+        this.showBtns();
+      }
+    }, //显示btns
+    showBtns() {
+      this.btnsVisible = true;
+      //在一定时间后无操作就会自动隐藏btns  ，前提是上一个延时完成
+      if (!this.timer) {
+        this.timer = setTimeout(() => {
+          this.hideBtns();
+        }, 5000);
+      }
+    },
+    //隐藏btns
+    hideBtns() {
+      this.btnsVisible = false;
+      //如果还在延时器的时间范围内，清楚
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+    }, //新建一个动态，跳转到 新建动态页面
+    newATweet(type = 'plain') {
+      if (this.btnsVisible) this.hideBtns();
+      if (type === 'plain') {
+        console.log('new a plain tweet');
+      } else if (type === 'img') {
+        console.log('new a img tweet');
+      } else {
+        console.log('new a video tweet');
+      }
+      this.$navigate(`/pages/createtweet_page?type=${type}`);
+    },
+  },
+  onLoad() {
+    wx.showNavigationBarLoading();
+    this.getData();
+    wx.hideNavigationBarLoading();
+  },
+  //上拉触底 加载更多
+  onReachBottom() {
+    const src = [
+      'https://wx2.sinaimg.cn/mw690/6cd6d028ly4ggv1ek5z72j20c80c8aas.jpg',
+      'https://wx3.sinaimg.cn/mw690/6b1394a6gy1ggwmxfa7v7j20go09djxt.jpg',
+    ];
+    const index = parseInt(Math.random() * 2);
+    const list = [
+      {
+        userinfo: {
+          name: 'user1',
+          campus: 'cqut',
+          avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+        },
+        tweetTime: '2020.07.14 20:22',
+        collectCount: 5,
+        transmitCount: 0,
+        commentCount: 5,
+        starCount: 6,
+        id: 20,
+        text: '毕业了',
+        imgs: [src[index], src[index], src[index]],
+        video: '',
+      },
+      {
+        userinfo: {
+          name: 'user1',
+          campus: 'cqut',
+          avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+        },
+        tweetTime: '2020.07.14 20:22',
+        collectCount: 5,
+        transmitCount: 0,
+        commentCount: 5,
+        starCount: 6,
+        id: 19,
+        text: '毕业了',
+        imgs: [src[index], src[index], src[index]],
+        video: '',
+      },
+    ];
+    // this.showlist.push(...list);//用wepy 的页面更新有问题
+    //每次 话到底加载2个
+
+    //temp 临时测试
+
+    if (this.currentLength < 15) {
+      this.$wx.setData({
+        showlist: [...this.$wx.data.showlist, ...list],
+      });
+      this.currentLength += 2;
+      console.log('加载更多');
+    }
+  },
+  //顶端下拉刷新
+  onPullDownRefresh() {
+    console.log('下拉刷新');
+    this.getData();
+    wx.stopPullDownRefresh();
+    // console.log(this);
+  },
+  //引入节流 函数，减少触发次数
+  onPageScroll({ scrollTop }) {
+    // console.log(scrollTop);
+    if (this.btnsVisible) this.hideBtns();
+    if (scrollTop > 300) {
+      this.backTopVisible = true;
+    } else this.backTopVisible = false;
+  },
+});
+</script>
+
 <config>
 {
     navigationBarTitleText: '社区',
     usingComponents: {
-     
-    }
+     'tweet-item':'../components/com/tweet_item',
+      "van-toast": '../components/vant/toast',
+      "van-popup": '../components/vant/popup',
+      "van-icon": '../components/vant/icon',
+
+      'back-top':'../components/com/back_top/back_top',
+    },
+    enablePullDownRefresh:true
 }
 </config>

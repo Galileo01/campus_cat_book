@@ -99,10 +99,13 @@
         </view>
       </view>
     </van-popup>
+    <back-top v-if="backTopVisible" @hide="backTopVisible = false"></back-top>
   </view>
 </template>
 <style lang="less">
 .home {
+  height: auto;
+
   view {
     font-size: 12px;
   }
@@ -113,7 +116,7 @@
     background-color: transparent; /*去除图标tap时背景 */
   }
   .items-wapper {
-    margin-top: 20rpx;
+    padding-top: 20rpx;
   }
   /*撑开 内容防止 内容区域高度不够 页面滚到顶*/
   .full-screen {
@@ -181,17 +184,16 @@ wepy.page({
     actions: [
       {
         name: '本地',
-        color: '#409EFF',
         id: 0,
       },
       {
         name: '拍摄',
-        color: '#409EFF',
         id: 1,
       },
     ],
     isshowResult: false,
     results: [], //搜索结果
+    backTopVisible:false
   },
 
   methods: {
@@ -416,7 +418,9 @@ wepy.page({
   },
 
   onLoad() {
+    wx.showNavigationBarLoading();
     this.getData();
+    wx.hideNavigationBarLoading();
   },
   //绑定节流函数，减少性能消耗 ,使用普通函数，保存this
   onPageScroll({ scrollTop }) {
@@ -424,6 +428,9 @@ wepy.page({
     else {
       this.isFixed = false;
     }
+    if (scrollTop > 300) {
+      this.backTopVisible = true;
+    } else this.backTopVisible = false;
   },
 });
 </script>
@@ -440,7 +447,7 @@ wepy.page({
      "van-popup":'../components/vant/popup',
 
     "cat-item": '../components/com/cat_item',
-    
+    'back-top':'../components/com/back_top/back_top',
     }
 }
 </config>
