@@ -2,6 +2,7 @@
 .container {
   display: flex;
   flex-direction: column;
+  font-size: 13px;
 }
 </style>
 
@@ -16,12 +17,15 @@ wepy.app({});
 <config>
 {
     pages: [
-      'pages/createtweet_page',
-     "pages/community",
+       'pages/userinfo',
       'pages/index',
       'pages/profile',
-     'pages/catdetail',
-      
+      'pages/catdetail',
+       "pages/community",
+       'pages/tweet_detail',
+       'pages/createtweet_page',
+       
+     
     ],
     window: {
       backgroundTextStyle: 'light',

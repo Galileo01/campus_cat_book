@@ -1,8 +1,8 @@
 <template>
   <view class="tweet_item">
-    <view class="header">
-      <image :src="item.userinfo.avatar"></image>
-      <view class="baseinfo">
+    <view class="header" @tap="$emit('seeMore',item.id)">
+      <image :src="item.userinfo.avatar"  @tap.stop="$emit('seeUserInfo',item.userinfo.id)"></image>
+      <view class="baseinfo" >
         <view class="username">{{ item.userinfo.name }}</view>
         <view class="info">
           <text>{{ item.tweetTime }}</text>
@@ -11,7 +11,7 @@
         </view>
       </view>
     </view>
-    <view class="content">
+    <view class="content" @tap="$emit('seeMore',item.id)">
       <view class="text">
         {{ item.text }}
       </view>
@@ -24,7 +24,7 @@
           fit="widthFix"
           use-error-slot
           lazy-load
-          @tap="$emit('enlarge', i)"
+          @tap.stop="$emit('enlarge', i)"
           :class="{'single-one':item.imgs.length===1}"
         >
           <text class="load-error" slot="error">加载失败</text>
@@ -34,17 +34,17 @@
         <video :src="item.video" show-mute-btn></video>
       </view>
     </view>
-    <view class="btns">
-      <view class="btn" @tap="$emit('collect', item.id)">
+    <view class="btns" >
+      <view class="btn" @tap="$emit('collect', item.id)" v-if="mode==='item'">
         <van-icon name="star-o" size="30rpx" /><text>{{
           item.collectCount
         }}</text></view
       >
       <view class="btn" @tap="$emit('comment', item.id)">
-        <van-icon name="comment-o" size="30rpx" />
+        <van-icon name="comment-o" :size="mode==='item'?'30rpx':'40rpx'" />
         <text>{{ item.commentCount }}</text>
       </view>
-      <view class="btn" @tap="$emit('star', item.id)">
+      <view class="btn" @tap="$emit('star', item.id)" v-if="mode==='item'">
         <van-icon name="good-job-o" size="30rpx" />
         <text>{{ item.starCount }}</text>
       </view>
@@ -117,20 +117,26 @@
       }
     }
   }
+  
 }
 </style>
 <script>
 import wepy from '@wepy/core';
 
 wepy.component({
+  
   data: {
-    showImgs: [],
+   
   },
   props: {
     item: {
       type: Object,
       default: {},
-    },
+    }, //当前展示的模式   item/detail  在社区页面 已item一项一项的展示，在 详情页 detail
+    mode:{
+      type:String,
+      default:'item'
+    }
   },
   computed: {
     //根据图片数量  计算 每个图片的宽度
@@ -149,13 +155,7 @@ wepy.component({
       return 0;
     },
   },
-  //监听数据变化
-  watch: {
-    item() {
-      // console.log(this.item);
-      this.showImgs = this.item.imgs.slice(0, 3);
-    },
-  },
+ 
   methods: {},
   created() {
     // console.log(this.imgWidth);

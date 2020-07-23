@@ -1,0 +1,29 @@
+<template>
+  <view class="userinfo">
+      id={{id}}
+  </view>
+</template>
+<style lang="less">
+
+</style>
+<script>
+import wepy from '@wepy/core';
+wepy.page({
+    data:{
+        id:0,
+    },
+    onLoad({id}){
+        this.id=id;
+        console.log(id);
+    }
+})
+</script>
+
+<config>
+{
+  navigationBarTitleText: '用户信息',
+    usingComponents: {
+     
+    }
+}
+</config>

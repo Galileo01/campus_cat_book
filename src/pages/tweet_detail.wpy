@@ -1,0 +1,389 @@
+<template>
+  <view class="tweet_detail container">
+    <view class="baseinfo">
+      <tweet-item
+        :item="tweetInfo"
+        mode="detail"
+        @enlarge="enlargeTap"
+        @seeUserInfo="seeUserInfo"
+      ></tweet-item>
+    </view>
+    <view class="comments">
+      <view class="comment-item" v-for="(item, index) in comments">
+        <view class="avater">
+          <image :src="item.userinfo.avatar" @tap="seeUserInfo(item.userinfo.id)"></image>
+        </view>
+        <view class="content">
+          <view>{{ item.userinfo.name }}:</view>
+          <view class="text">{{ item.content }}</view>
+          <view class="bottom">
+            <view class="left"
+              ><text class="time">{{ item.time }}</text>
+              <text class="campus">{{ item.userinfo.campus }}</text></view
+            >
+            <view class="right">
+              <van-icon
+                name="good-job-o"
+                size="30rpx"
+                @tap="starComment(item.commentID)"
+              />
+              <text>{{ item.star }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="btns">
+      <view class="btn" @tap="collectTap"> <text>收藏</text></view>
+      <view class="btn" @tap="showCommentInput">
+        <text>评论</text>
+      </view>
+      <view class="btn" @tap="starTap">
+        <text>点赞</text>
+      </view>
+    </view>
+    <!--图片放大-->
+    <van-popup
+      :show="imgDialogVisible"
+      @close="closeImgDialog"
+      closeable
+      class="img-popup"
+    >
+      <view class="preview">
+        <image :src="imgSrc"></image>
+        <view class="download">
+          <van-icon name="down" size="40rpx" color="#fff" @tap="downloadImg" />
+        </view>
+      </view>
+    </van-popup>
+    <!--评论弹框-->
+    <van-popup
+      :show="commentInputVivisble"
+      @close="closeInput"
+      position="bottom"
+      custom-style="height: 90%;"
+      closeable
+      class="comment-popup"
+    >
+      <view class="comment-input">
+        <van-field
+          :value="mycomment"
+          placeholder="请输入评论"
+          autosize
+          type="textarea"
+          @input="commentInput"
+        />
+        <van-button
+          class="send"
+          round
+          type="info"
+          size="small"
+          @tap="sendComment"
+          >发送</van-button
+        >
+      </view>
+    </van-popup>
+    <!--toast 弹框-->
+    <van-toast id="van-toast" />
+  </view>
+</template>
+
+<style lang="less">
+.tweet_detail {
+  background-color: #f7f8fa;
+  .comments {
+    margin-bottom: 80rpx;
+    .comment-item {
+      padding: 20rpx 20rpx 10rpx 20rpx;
+      margin: 10rpx 0;
+      background-color: #fff;
+      font-size: 11px;
+      display: flex;
+      .avater {
+        image {
+          width: 60rpx;
+          height: 60rpx;
+          border-radius: 50%;
+        }
+      }
+      .content {
+        margin-left: 40rpx;
+        width: 100%;
+        .text {
+          padding: 10rpx 0;
+        }
+        .bottom {
+          display: flex;
+          justify-content: space-between;
+          .time {
+            color: #a497a6;
+            font-size: 9px;
+          }
+          .campus {
+            margin-left: 10rpx;
+            color: #409eff;
+          }
+          .right {
+            margin-right: 20rpx;
+            display: flex;
+            text {
+              margin-left: 5rpx;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .btns {
+    position: fixed;
+    width: 100vw;
+    bottom: 0;
+    margin-top: 10rpx;
+    padding-top: 10rpx;
+    display: flex;
+    height: 80rpx;
+    justify-content: space-around;
+    border-top: 2rpx #d7d8da solid;
+    background-color: #fff;
+    font-size: 13px;
+    .btn {
+      display: flex;
+      align-items: center;
+      text {
+        margin-left: 10rpx;
+        color: #409eff;
+      }
+    }
+  }
+  .preview {
+    background-color: rgba(0, 0, 0, 0.7); /*和遮罩层 颜色一致 */
+    .download {
+      background-color: none;
+      .van-icon {
+        position: absolute;
+        right: 16px;
+        bottom: 40rpx;
+        color: #fff;
+      }
+    }
+  }
+  .img-popup .van-popup .van-icon {
+    color: #fff;
+  }
+
+  .comment-popup .van-popup .van-icon {
+    z-index: 99;
+    font-size: 20px;
+  }
+  .comment-input {
+    padding: 20rpx;
+    width: 100%;
+    height: 30vh;
+    position: relative;
+    van-field,
+    .van-field__body,
+    textarea {
+      width: 80vw;
+    }
+    .send {
+      position: absolute;
+      bottom: 20rpx;
+      right: 60rpx;
+    }
+  }
+}
+</style>
+
+<script>
+import wepy from '@wepy/core';
+import Toast from 'components/vant/toast/toast';
+wepy.page({
+  data: {
+    id: 0,
+    tweetInfo: {},
+    comments: [],
+    imgSrc: '',
+    imgDialogVisible: false,
+    commentInputVivisble: false,
+    mycomment: '',
+  },
+  methods: {
+    getData() {
+      const data = {
+        userinfo: {
+          name: 'user1',
+          campus: 'cqut',
+          id: 1,
+          avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+        },
+        tweetTime: '2020.07.14 20:22',
+        collectCount: 5,
+        transmitCount: 0,
+        commentCount: 5,
+        starCount: 6,
+        id: 2,
+        text: '毕业了',
+        imgs: [
+          'https://wx2.sinaimg.cn/mw690/6cd6d028ly4ggv1ek5z72j20c80c8aas.jpg',
+          'https://wx2.sinaimg.cn/mw690/6cd6d028ly4ggv1ek5z72j20c80c8aas.jpg',
+        ],
+        video: '',
+        topic: '666',
+      };
+      const comments = [
+        {
+          userID: 2,
+          content: '666',
+          time: '2020 0717 19:01',
+          star: 0,
+          commentID: 1,
+        },
+        {
+          userID: 3,
+          content: '666',
+          time: '2020 0717 19:01',
+          star: 2,
+          commentID: 2,
+        },
+        {
+          userID: 2,
+          content: '666',
+          time: '2020 0717 19:01',
+          star: 0,
+          commentID: 3,
+        },
+        {
+          userID: 2,
+          content: '666',
+          time: '2020 0717 19:01',
+          star: 0,
+          commentID: 4,
+        },
+        {
+          userID: 2,
+          content: '666',
+          time: '2020 0717 19:01',
+          star: 0,
+          commentID: 5,
+        },
+        {
+          userID: 2,
+          content: '666',
+          time: '2020 0717 19:01',
+          star: 0,
+          commentID: 6,
+        },
+      ];
+      this.tweetInfo = data;
+      this.comments = comments.map((item) => {
+        return {
+          ...item,
+          userinfo: {
+            name: '张三',
+            id: 1,
+            campus: 'cqut',
+            avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+          },
+        };
+      });
+    },
+    enlargeTap(src) {
+      // console.log(src);
+      if (this.btnsVisible) this.hideBtns();
+      this.imgSrc = src;
+      this.imgDialogVisible = true;
+    },
+    closeImgDialog() {
+      this.imgDialogVisible = false;
+      this.$nextTick(() => {
+        this.imgSrc = '';
+      });
+    },
+    //展示评论输入框
+    showCommentInput() {
+      this.commentInputVivisble = true;
+    },
+    commentInput({ $wx: { detail } }) {
+      //   console.log(detail);
+      this.mycomment = detail;
+    },
+    closeInput() {
+      this.commentInputVivisble = false;
+      this.mycomment = '';
+    },
+    starTap() {
+      Toast('点赞成功');
+    },
+    collectTap() {
+      Toast('收藏成功');
+    },
+    starComment(id) {
+      Toast('点赞成功');
+      console.log(id);
+      for(const item of this.comments)
+      {
+          if(item.commentID===id)
+          {
+              item.star++;
+              break ;
+          }
+      }
+    },
+    seeUserInfo(id){
+        console.log(id);
+        this.$navigate('/pages/userinfo?id='+id);
+    },
+    sendComment() {
+      if (this.mycomment) {
+        Toast.loading({
+          mask: true,
+          duration: 0, //一致显示toast
+          message: '发送中...',
+        });
+        //请求成功 后关闭，模拟
+        const timer = setTimeout(() => {
+          this.comments.push({
+            userID: 2,
+            content: this.mycomment,
+            time: '2020 0723 19:01',
+            star: 0,
+            commentID: 7,
+            userinfo: {
+              name: '王五',
+              id: 2,
+              campus: 'cqut',
+              avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+            },
+          });
+          this.closeInput();
+          Toast.clear();
+          clearTimeout(timer);
+        }, 500);
+      } else {
+        Toast.fail('评论内容为空');
+      }
+    },
+  },
+  onLoad({ id }) {
+    console.log(id);
+    this.id = id;
+    wx.showNavigationBarLoading();
+    this.getData();
+    wx.hideNavigationBarLoading();
+  },
+});
+</script>
+
+<config>
+{
+    navigationBarTitleText: '动态详情',
+    usingComponents: {
+     'tweet-item':'../components/com/tweet_item',
+     'van-icon':'../components/vant/icon',
+       "van-popup": '../components/vant/popup',
+       "van-field":'../components/vant/field',
+       "van-button":'../components/vant/button',
+         "van-toast":'../components/vant/toast',
+    }
+}</config>
