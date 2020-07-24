@@ -1,8 +1,11 @@
 <template>
   <view class="tweet_item">
-    <view class="header" @tap="$emit('seeMore',item.id)">
-      <image :src="item.userinfo.avatar"  @tap.stop="$emit('seeUserInfo',item.userinfo.id)"></image>
-      <view class="baseinfo" >
+    <view class="header" @tap="$emit('seeMore', item.id)">
+      <image
+        :src="item.userinfo.avatar"
+        @tap.stop="$emit('seeUserInfo', item.userinfo.id)"
+      ></image>
+      <view class="baseinfo">
         <view class="username">{{ item.userinfo.name }}</view>
         <view class="info">
           <text>{{ item.tweetTime }}</text>
@@ -11,7 +14,7 @@
         </view>
       </view>
     </view>
-    <view class="content" @tap="$emit('seeMore',item.id)">
+    <view class="content" @tap="$emit('seeMore', item.id)">
       <view class="text">
         {{ item.text }}
       </view>
@@ -25,26 +28,29 @@
           use-error-slot
           lazy-load
           @tap.stop="$emit('enlarge', i)"
-          :class="{'single-one':item.imgs.length===1}"
+          :class="{ 'single-one': item.imgs.length === 1 }"
         >
           <text class="load-error" slot="error">加载失败</text>
         </van-image>
       </view>
-      <view class="video" v-if="item.video">
+      <view class="video" v-if="item.video" @tap.stop="a=1">
         <video :src="item.video" show-mute-btn></video>
       </view>
     </view>
-    <view class="btns" >
-      <view class="btn" @tap="$emit('collect', item.id)" v-if="mode==='item'">
+    <view class="btns">
+      <view class="btn" @tap="$emit('collect', item.id)" v-if="mode === 'item'">
         <van-icon name="star-o" size="30rpx" /><text>{{
           item.collectCount
         }}</text></view
       >
       <view class="btn" @tap="$emit('comment', item.id)">
-        <van-icon name="comment-o" :size="mode==='item'?'30rpx':'40rpx'" />
+        <van-icon
+          name="comment-o"
+          :size="mode === 'item' ? '30rpx' : '40rpx'"
+        />
         <text>{{ item.commentCount }}</text>
       </view>
-      <view class="btn" @tap="$emit('star', item.id)" v-if="mode==='item'">
+      <view class="btn" @tap="$emit('star', item.id)" v-if="mode === 'item'">
         <van-icon name="good-job-o" size="30rpx" />
         <text>{{ item.starCount }}</text>
       </view>
@@ -89,15 +95,18 @@
         margin: 0 5rpx;
       }
       /*只有一张图片时 使一张图片保持居中 */
-      .single-one{
-        margin:0 auto;
-      } 
+      .single-one {
+        margin: 0 auto;
+      }
     }
     .video {
       margin-top: 10rpx;
+      max-width: 80vw;
+      margin: 0 auto;
       video {
         height: 300rpx;
-        margin: 0 auto;
+        max-width: 80vw;
+
         display: block;
       }
     }
@@ -117,26 +126,22 @@
       }
     }
   }
-  
 }
 </style>
 <script>
 import wepy from '@wepy/core';
 
 wepy.component({
-  
-  data: {
-   
-  },
+  data: {},
   props: {
     item: {
       type: Object,
       default: {},
     }, //当前展示的模式   item/detail  在社区页面 已item一项一项的展示，在 详情页 detail
-    mode:{
-      type:String,
-      default:'item'
-    }
+    mode: {
+      type: String,
+      default: 'item',
+    },
   },
   computed: {
     //根据图片数量  计算 每个图片的宽度
@@ -155,7 +160,7 @@ wepy.component({
       return 0;
     },
   },
- 
+
   methods: {},
   created() {
     // console.log(this.imgWidth);

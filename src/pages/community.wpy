@@ -33,15 +33,11 @@
       </view>
     </view>
     <view class="bottom"><van-tag plain>到底了</van-tag></view>
-    
-    <van-popup :show="imgDialogVisible" @close="closeImgDialog" closeable>
-      <view class="preview">
-        <image :src="imgSrc"></image>
-        <view class="download">
-          <van-icon name="down" size="40rpx" color="#fff" @tap="downloadImg" />
-        </view>
-      </view>
-    </van-popup>
+    <enlarge-img
+      :visible="imgDialogVisible"
+      :imgSrc="imgSrc"
+      @enlargeClose="closeImgDialog"
+    ></enlarge-img>
     <van-toast id="van-toast" />
     <back-top v-if="backTopVisible" @hide="backTopVisible = false"></back-top>
   </view>
@@ -117,27 +113,13 @@
     color: #a497a6;
     text-align: center;
   }
-  .preview {
-    background-color: rgba(0, 0, 0, 0.7); /*和遮罩层 颜色一致 */
-    .download {
-      background-color: none;
-      .van-icon {
-        position: absolute;
-        right: 16px;
-        bottom: 40rpx;
-        color: #fff;
-      }
-    }
-  }
-  .van-popup .van-icon {
-    color: #fff;
-  }
 }
 </style>
 <script>
 import wepy from '@wepy/core';
-import Toast from 'components/vant/toast/toast';
+import tweetMixin from 'common/tweetMixin';
 wepy.page({
+  mixins:[tweetMixin],
   data: {
     showlist: [], //真正展示的动态列表
     allTweets: [],
@@ -177,6 +159,7 @@ wepy.page({
         {
           userinfo: {
             name: 'user1',
+            id: 2,
             campus: 'cqut',
             avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
           },
@@ -203,7 +186,8 @@ wepy.page({
           commentCount: 5,
           starCount: 6,
           id: 2,
-          text: '抖音：7月打击色情黑产账号超12万】7 月至今，抖音安全中心永久封禁相关账号 12.7 万个，相关设备 3.6 万台，根据情节程度梯度处罚账号 2.7 万个。……详情点击',
+          text:
+            '抖音：7月打击色情黑产账号超12万】7 月至今，抖音安全中心永久封禁相关账号 12.7 万个，相关设备 3.6 万台，根据情节程度梯度处罚账号 2.7 万个。……详情点击',
           imgs: [src[index], src[index]],
           video: '',
           topic: '666',
@@ -262,23 +246,14 @@ wepy.page({
       this.showlist = list.slice(0, 10); //默认展示前 10条
       this.currentLength = this.showlist.length;
     },
-    //收藏某个 动态
-    collectTap(id) {
-      if (this.btnsVisible) this.hideBtns();
-      console.log(id, 'collect');
-      Toast('收藏成功');
-    },
-    starTap(id) {
-      if (this.btnsVisible) this.hideBtns();
-      console.log(id, 'star');
-      Toast('点赞成功');
-    },
+    
     //点击图片放大
     enlargeTap(src) {
       // console.log(src);
       if (this.btnsVisible) this.hideBtns();
       this.imgSrc = src;
       this.imgDialogVisible = true;
+     
     },
     closeImgDialog() {
       this.imgDialogVisible = false;
@@ -343,16 +318,6 @@ wepy.page({
         console.log('new a video tweet');
       }
       this.$navigate(`/pages/createtweet_page?type=${type}`);
-    },
-    //点击 动态的更多信息评论
-    seeMore(id) {
-       if (this.btnsVisible) this.hideBtns();
-       console.log(id);
-       this.$navigate('/pages/tweet_detail?id='+id);
-    },
-    //点击用户头像 查看用户信息
-    seeUserInfo(id) {
-      console.log('userid', id);
     },
   },
   onLoad() {
@@ -438,6 +403,7 @@ wepy.page({
     navigationBarTitleText: '社区',
     usingComponents: {
      'tweet-item':'../components/com/tweet_item',
+      'enlarge-img':'../components/com/enlarge_img',
       "van-toast": '../components/vant/toast',
       "van-popup": '../components/vant/popup',
       "van-icon": '../components/vant/icon',

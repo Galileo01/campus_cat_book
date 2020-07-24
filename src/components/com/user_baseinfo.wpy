@@ -1,0 +1,97 @@
+<template>
+  <view class="user_baseinfo">
+    <view class="avatar">
+      <image :src="userinfo.avatar" @tap="$emit('avatarTap',userinfo.avatar)"></image>
+    </view>
+    <view class="baseinfo">
+      <van-row class="row">
+        <van-col span="8" offset="2">昵称 :</van-col>
+        <van-col span="13" class="data" offset="1">{{ userinfo.name }}</van-col>
+      </van-row>
+      <van-row>
+        <van-col span="8" offset="2">性别 :</van-col>
+        <van-col span="13" class="data" offset="1">{{ userinfo.sex }}</van-col>
+      </van-row>
+      <van-row>
+        <van-col span="8" offset="2">个性签名 :</van-col>
+        <van-col span="13" class="data" offset="1">{{
+          userinfo.signature
+        }}</van-col>
+      </van-row>
+      <van-row>
+        <van-col span="8" offset="2">学校 :</van-col>
+        <van-col span="13" class="data" offset="1">{{
+          userinfo.campus
+        }}</van-col>
+      </van-row>
+    </view>
+    <view class="btn" v-if="mode==='my'">
+      <van-icon name="edit" size="40rpx" color="#fff" @tap="$emit('edit')"></van-icon>
+    </view>
+  </view>
+</template>
+<style lang="less">
+.user_baseinfo {
+  padding: 20rpx;
+  background-color: var(--gcolor);
+  background-image: linear-gradient(to right, #97abff, #409eff);
+  //    background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  .avatar image {
+    width: 200rpx;
+    height: 200rpx;
+    border-radius: 50%;
+  }
+  .baseinfo {
+    width: 400rpx;
+    display: flex;
+    flex-direction: column;
+    // color:var(--gcolor);
+    // border:1px solid var(--gcolor)
+    van-row {
+      margin-bottom: 10rpx !important;
+    }
+
+    .data {
+      //    color:var(--gcolor);
+      color: #fff;
+    }
+  }
+  .btn {
+    width: 100rpx;
+    display: flex;
+    justify-content: end;
+    align-items: flex-end;
+    van-icon {
+      margin-bottom: 20rpx;
+    }
+  }
+}
+</style>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  props: {
+    userinfo: {
+      type: Object,
+      default: {},
+    }, //展示的模式 个人还是
+    mode: {
+      type: String,
+      default: 'other', //展示其他人的信息
+    },
+  },
+  data: {},
+});
+</script>
+
+<config>
+{
+  usingComponents: {
+     'van-col':'../vant/col',
+     'van-row':'../vant/row',
+     'van-icon':'../vant/icon',
+  }
+}
+</config>

@@ -1,0 +1,77 @@
+<template>
+  <van-popup
+    :show="visible"
+    @close="$emit('enlargeClose')"
+    closeable
+    class="enlarge_img"
+  >
+    <view class="preview">
+      <image :src="imgSrc"></image>
+      <view class="download">
+        <van-icon name="down" size="40rpx" color="#fff" @tap="downloadImg" />
+      </view>
+    </view>
+  </van-popup>
+</template>
+
+<style lang="less">
+.enlarge_img {
+  .preview {
+    background-color: rgba(0, 0, 0, 0.7); /*和遮罩层 颜色一致 */
+    position: relative;
+    .download {
+      background-color: transparent;
+      van-icon {
+        position: absolute;
+        right: 16px;
+        bottom: 40rpx;
+      }
+    }
+  }
+  van-icon {
+    color: #fff;
+  }
+}
+</style>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  props: {
+    imgSrc: {
+      type: String,
+      default: '',
+    },
+    visible: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  methods: {
+    //下载图片到本地
+    downloadImg() {
+      wx.getImageInfo({
+        src: this.imgSrc,
+        success: function (ret) {
+          var path = ret.path;
+          wx.saveImageToPhotosAlbum({
+            filePath: path,
+            success(result) {
+              console.log(result);
+              this.$emit('downloadSuccess');
+            },
+          });
+        },
+      });
+    },
+  },
+});
+</script>
+
+<config>
+{
+ usingComponents: {
+       "van-popup": '../vant/popup',
+        "van-icon": '../vant/icon',
+ }
+}
+</config>

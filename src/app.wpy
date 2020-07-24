@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   font-size: 13px;
+  --gcolor:#409EFF;
 }
 </style>
 
@@ -17,11 +18,13 @@ wepy.app({});
 <config>
 {
     pages: [
-       'pages/userinfo',
+       
+      "pages/community",
+      'pages/userinfo',
       'pages/index',
       'pages/profile',
       'pages/catdetail',
-       "pages/community",
+      
        'pages/tweet_detail',
        'pages/createtweet_page',
        
