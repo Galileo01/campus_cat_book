@@ -51,7 +51,11 @@
           </van-field>
         </view>
         <view class="btns">
-          <van-button size="small" type="danger" color="#F56C6C" @tap="closeInput()"
+          <van-button
+            size="small"
+            type="danger"
+            color="#F56C6C"
+            @tap="closeInput()"
             >取消</van-button
           >
           <van-button size="small" type="info" color="#409EFF" @tap="submit"
@@ -132,20 +136,7 @@ import wepy from '@wepy/core';
 import Toast from 'components/vant/toast/toast';
 wepy.page({
   data: {
-    applies: [
-      {
-        right: '信息录入',
-        state: 0,
-        id: 0,
-        user: 'user1',
-      },
-      {
-        right: '信息录入',
-        state: 1,
-        id: 0,
-        user: 'user1',
-      },
-    ],
+    applies: [],
     inputVisible: false,
     options: [
       { text: '信息录入', value: 0 },
@@ -155,18 +146,34 @@ wepy.page({
     email: '',
   },
   methods: {
+    getData() {
+      this.applies = [
+        {
+          right: '信息录入',
+          state: 0,
+          id: 0,
+          user: 'user1',
+        },
+        {
+          right: '信息录入',
+          state: 1,
+          id: 0,
+          user: 'user1',
+        },
+      ];
+    },
     change({ $wx: { detail } }) {
       this.right = detail;
-    //   console.log(detail);
+      //   console.log(detail);
     },
     input({ $wx: { detail } }) {
       this.email = detail;
-    //   console.log(detail);
+      //   console.log(detail);
     },
     closeInput() {
       this.inputVisible = false;
       this.right = 0;
-      this.email='';
+      this.email = '';
     },
     submit() {
       Toast.loading({
@@ -181,6 +188,11 @@ wepy.page({
         this.closeInput();
       }, 500);
     },
+  },
+  onLoad() {
+     wx.showNavigationBarLoading();
+    this.getData();
+    wx.hideNavigationBarLoading();
   },
 });
 </script>

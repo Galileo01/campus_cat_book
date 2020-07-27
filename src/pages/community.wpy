@@ -172,7 +172,7 @@ wepy.page({
           text: '毕业了',
           imgs: [],
           video:
-            'https://f.video.weibocdn.com/TZHNe9o7lx07ESUanuiQ0104120323oJ0E020.mp4?label=mp4_1080p&template=1920x1080.25.0&trans_finger=daa7c63436091a9dfe20e4b554312cac&ori=2&Expires=1595165248&ssig=4a%2Fv8rCLP0&KID=unistore,video',
+            'https://f.video.weibocdn.com/002GWkWvgx07Fa2IxA6b01041200uDqy0E010.mp4?label=mp4_720p&template=720x1280.24.0&trans_finger=c3f00996be5378650057cf237d7bfffd&ori=2&Expires=1595860510&ssig=IIAMsMf3WT&KID=unistore,video',
         },
         {
           userinfo: {

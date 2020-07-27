@@ -23,7 +23,7 @@
         type="info"
         icon="edit"
         size="small"
-        round 
+        round
         @tap="inputVisible = true"
         color="#409EFF"
       ></van-button>
@@ -47,8 +47,8 @@
               required
               clearable
               focus
-              @input="inputHandle($event,'title')"
-               :value="formData.title"
+              @input="inputHandle($event, 'title')"
+              :value="formData.title"
             ></van-field>
           </view>
           <view class="form-item content">
@@ -60,8 +60,8 @@
               autosize
               clearable
               required
-              @input="inputHandle($event,'content')"
-               :value="formData.content"
+              @input="inputHandle($event, 'content')"
+              :value="formData.content"
             ></van-field>
           </view>
           <view class="form-item">
@@ -79,14 +79,14 @@
           <view class="form-item connect">
             <text>邮箱</text>
             <van-field
-                placeholder-style="font-size:12px"
-                :value="formData.connect"
-                :maxlength="20"
-                required
-                clearable
-                focus
-                @input="inputHandle($event,'connect')"
-              ></van-field>
+              placeholder-style="font-size:12px"
+              :value="formData.connect"
+              :maxlength="20"
+              required
+              clearable
+              focus
+              @input="inputHandle($event, 'connect')"
+            ></van-field>
           </view>
         </view>
         <view class="btns">
@@ -159,7 +159,7 @@
         margin-left: 10rpx;
       }
     }
-    
+
     .btns {
       position: absolute;
       bottom: 20rpx;
@@ -186,7 +186,6 @@ wepy.page({
       connect: '',
       connectType: 'tel',
     },
-   
   },
   methods: {
     getData() {
@@ -214,9 +213,9 @@ wepy.page({
       ];
       this.feedbacks = data;
     },
-    inputHandle({$wx:{detail}},key){
-      console.log(detail,key);
-      this.formData[key]=detail
+    inputHandle({ $wx: { detail } }, key) {
+      console.log(detail, key);
+      this.formData[key] = detail;
     },
     closeInput() {
       this.inputVisible = false;
@@ -255,7 +254,9 @@ wepy.page({
     },
   },
   onLoad() {
+    wx.showNavigationBarLoading();
     this.getData();
+    wx.hideNavigationBarLoading();
   },
 });
 </script>

@@ -258,7 +258,9 @@ wepy.page({
     },
   },
   onLoad() {
+     wx.showNavigationBarLoading();
     this.getData();
+    wx.hideNavigationBarLoading();
   },
 });
 </script>

@@ -54,8 +54,8 @@ wepy.page({
     id: 1,
     userinfo: {},
     myTweets: [], //我的所有个人动态
-    showlist:[],//用于展示的 动态
-    currentLength:0,//当前展示的个数
+    showlist: [], //用于展示的 动态
+    currentLength: 0, //当前展示的个数
     myCatCollections: [], //我的猫猫收藏
     currentTab: 'tweets',
     //图片放大
@@ -219,15 +219,22 @@ wepy.page({
           character: '大方，不怕生', //个性特征
         },
       ];
-      this.userinfo = userinfo;
-      this.myTweets = tweets.map((item) => {
+
+
+      const myTweets = tweets.map((item) => {
         return {
           ...item,
           userinfo,
         };
       });
-      this.showlist= this.myTweets.slice(0,5);
-      this.myCatCollections = catCollects;
+      //合并setData 
+      this.$wx.setData({
+        userinfo,
+        myTweets,
+        showlist:myTweets.slice(0, 5),
+        myCatCollections:catCollects
+      });
+
     },
     //点击头像
     avatarTap(avatar) {

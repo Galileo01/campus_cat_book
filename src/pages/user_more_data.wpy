@@ -227,16 +227,22 @@ wepy.page({
         campus: 'cqut',
         sex: '男',
       };
-      this.tweets_my = this.tweets_co = tweets.map((item) => {
+      const tweets_my= tweets.map((item) => {
         return {
           ...item,
           userinfo,
         };
       });
-      this.showlist1 = this.tweets_my.slice(0, 5);
-      this.showlist2 = this.tweets_co.slice(0, 5);
-      this.cats = catCollects;
+      //后期改成 点击tab 加载对应的 列表数据
+      this.$wx.setData({
+        tweets_my,
+        tweets_co:tweets_my,
+        showlist1:tweets_my.slice(0, 5),
+        showlist2:tweets_my.slice(0, 5),
+        cats:catCollects
+      })
     },
+    //点击对应的 tab 才加载对应的数据
     onChange({
       $wx: {
         detail: { name },
