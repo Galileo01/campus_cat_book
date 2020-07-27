@@ -1,0 +1,200 @@
+<template>
+  <view class="right_apply container">
+    <view class="applies">
+      <view class="apply-item" v-for="item in applies">
+        <text>申请权限：{{ item.right }}</text>
+        <van-tag :type="item.state ? 'primary' : 'danger'">{{
+          item.state ? '已通过' : '未通过'
+        }}</van-tag>
+      </view>
+    </view>
+    <view class="btn">
+      <van-button
+        type="info"
+        icon="edit"
+        size="small"
+        round
+        @tap="inputVisible = true"
+        color="#409EFF"
+      ></van-button>
+    </view>
+
+    <van-popup
+      :show="inputVisible"
+      position="bottom"
+      custom-style="height: 100%;"
+      closeable
+      @close="closeInput"
+      class="input-popup"
+    >
+      <view class="popup-content">
+        <view class="right">
+          <text>要申请的权限:</text>
+          <van-dropdown-menu>
+            <van-dropdown-item
+              :value="right"
+              :options="options"
+              @change="change($event, 'right')"
+            />
+          </van-dropdown-menu>
+        </view>
+        <view class="email">
+          <text>邮箱:</text>
+          <van-field
+            clearable
+            @input="input"
+            placeholder="请输入邮箱"
+            required
+            placeholder-style="font-size:12px"
+            :value="email"
+          >
+          </van-field>
+        </view>
+        <view class="btns">
+          <van-button size="small" type="danger" color="#F56C6C" @tap="closeInput()"
+            >取消</van-button
+          >
+          <van-button size="small" type="info" color="#409EFF" @tap="submit"
+            >提交</van-button
+          >
+        </view>
+      </view>
+    </van-popup>
+
+    <van-toast id="van-toast" />
+  </view>
+</template>
+
+<style lang="less">
+.right_apply {
+  padding: 20rpx;
+  font-size: 14px;
+  .applies {
+    .apply-item {
+      margin: 0 auto;
+      width: 84%;
+      height: 80rpx;
+      margin-top: 20rpx;
+      padding: 20rpx;
+      -webkit-box-shadow: 0 0 10px #ddd;
+      box-shadow: 0 0 10px #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      border-radius: 10rpx;
+    }
+  }
+  .btn {
+    position: absolute;
+    bottom: 30rpx;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .input-popup {
+    .popup-content {
+      padding: 20rpx;
+    }
+    .right {
+      display: flex;
+      line-height: 100rpx;
+
+      justify-items: center;
+      van-dropdown-menu {
+        width: 50%;
+        .van-dropdown-item {
+          width: 40%;
+          left: 300rpx;
+          -webkit-box-shadow: 0 0 10px #ddd;
+          box-shadow: 0 0 10px #ddd;
+          // height: auto;
+          height: 200rpx;
+        }
+        van-overlay {
+          display: none;
+        }
+      }
+    }
+    .btns {
+      position: absolute;
+      bottom: 20rpx;
+      width: 60%;
+      display: flex;
+      justify-content: space-between;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+}
+</style>
+<script>
+import wepy from '@wepy/core';
+import Toast from 'components/vant/toast/toast';
+wepy.page({
+  data: {
+    applies: [
+      {
+        right: '信息录入',
+        state: 0,
+        id: 0,
+        user: 'user1',
+      },
+      {
+        right: '信息录入',
+        state: 1,
+        id: 0,
+        user: 'user1',
+      },
+    ],
+    inputVisible: false,
+    options: [
+      { text: '信息录入', value: 0 },
+      { text: '信息录入', value: 1 },
+    ],
+    right: 0,
+    email: '',
+  },
+  methods: {
+    change({ $wx: { detail } }) {
+      this.right = detail;
+    //   console.log(detail);
+    },
+    input({ $wx: { detail } }) {
+      this.email = detail;
+    //   console.log(detail);
+    },
+    closeInput() {
+      this.inputVisible = false;
+      this.right = 0;
+      this.email='';
+    },
+    submit() {
+      Toast.loading({
+        mask: true,
+        duration: 0, //一致显示toast
+        message: '提交中...',
+      });
+      //请求成功 后关闭，模拟
+      const timer = setTimeout(() => {
+        Toast.clear();
+        clearTimeout(timer);
+        this.closeInput();
+      }, 500);
+    },
+  },
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '权限申请',
+    usingComponents: {
+     "van-dropdown-menu":'../components/vant/dropdown-menu',
+      'van-dropdown-item':'../components/vant/dropdown-item',
+       'van-field':'../components/vant/field',
+        'van-button':'../components/vant/button',
+        'van-toast':'../components/vant/toast',
+        'van-tag':'../components/vant/tag',
+          'van-popup':'../components/vant/popup',
+    }
+}
+</config>

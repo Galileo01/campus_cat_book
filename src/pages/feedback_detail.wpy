@@ -1,0 +1,100 @@
+<template>
+  <view class="feedback_detail container">
+    <view class="wapper">
+      <view class="item">
+        <text class="title">标题:</text>
+        <text>{{ info.title }}</text>
+      </view>
+      <view class="item content">
+        <text class="title">反馈或问题描述:</text>
+        <text>{{ info.content }}</text>
+      </view>
+      <view class="item">
+        <text class="title">图片材料:</text>
+        <view class="imgs">
+          <image v-for="item in info.imgs" :src="item"></image>
+        </view>
+      </view>
+      <view class="item connect">
+        <text class="title">联系方式:</text>
+        <text>{{ info.connect }}</text>
+      </view>
+      <view class="item">
+        <text class="title">状态:</text>
+        <van-tag :type="item.state ? 'primary' : 'danger'">{{
+          item.state ? '已处理' : '未处理'
+        }}</van-tag>
+      </view>
+    </view>
+  </view>
+</template>
+<style lang="less">
+.mt10 {
+  margin-top: 20rpx;
+}
+.feedback_detail {
+  padding: 20rpx;
+  .wapper {
+    .item {
+      display: flex;
+      flex-direction: column;
+      margin-top: 30rpx;
+      border-bottom: 1rpx solid #f0f3f6;
+      padding: 10rpx;
+      .title {
+        font-size: 14px;
+        margin-bottom: 20rpx;
+      }
+      .imgs {
+        .mt10();
+        display: flex;
+        align-items: flex-start;
+        height: 200rpx;
+        image {
+          width: 30vw;
+          height: 30vw;
+          margin-left: 10rpx;
+        }
+      }
+    }
+  }
+}
+</style>
+<script>
+import wepy from '@wepy/core';
+wepy.page({
+  data: {
+    id: 0,
+    info: {},
+  },
+  methods: {
+    getData() {
+      this.info = {
+        title: '视频无法预览',
+        content: '动态发布页面，视频选择后无法预览',
+        imgs: [
+          'https://wx2.sinaimg.cn/mw690/6cd6d028ly4ggv1ek5z72j20c80c8aas.jpg',
+          'https://wx3.sinaimg.cn/mw690/6b1394a6gy1ggwmxfa7v7j20go09djxt.jpg',
+          'https://wx2.sinaimg.cn/mw690/6cd6d028ly4ggv1ek5z72j20c80c8aas.jpg',
+        ],
+        connect: '14565675645@qq.com', //联系方式
+        time: '2020 0705',
+        state: 0, //当前状态
+        userID: 1,
+      };
+    },
+  },
+  onLoad({ id }) {
+    console.log(id);
+    this.id = id;
+    this.getData();
+  },
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '反馈详情',
+     usingComponents: {
+      "van-tag":'../components/vant/tag',}
+}
+</config>

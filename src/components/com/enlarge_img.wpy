@@ -48,7 +48,9 @@ wepy.component({
   },
   methods: {
     //下载图片到本地
+
     downloadImg() {
+      console.log(this.imgSrc);
       wx.getImageInfo({
         src: this.imgSrc,
         success: function (ret) {

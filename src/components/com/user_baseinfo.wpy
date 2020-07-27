@@ -1,7 +1,7 @@
 <template>
   <view class="user_baseinfo">
     <view class="avatar">
-      <image :src="userinfo.avatar" @tap="$emit('avatarTap',userinfo.avatar)"></image>
+      <image :src="userinfo.avatar||defaultAvatar" @tap="$emit('avatarTap',userinfo.avatar)"></image>
     </view>
     <view class="baseinfo">
       <van-row class="row">
@@ -82,7 +82,10 @@ wepy.component({
       default: 'other', //展示其他人的信息
     },
   },
-  data: {},
+  data: {
+    //默认头像
+    defaultAvatar:'https://ftp.bmp.ovh/imgs/2020/07/992030ed118de088.png'
+  },
 });
 </script>
 

@@ -1,0 +1,304 @@
+<template>
+  <view class="more_data">
+    <van-tabs
+      :active="currentTab"
+      bind:change="onChange"
+      color="#409EFF"
+      sticky
+    >
+      <van-tab title="我的动态" name="tweet_m">
+        <view class="tweet_m">
+          <tweet-item
+            v-for="(i, index) in showlist1"
+            :item="i"
+            @collect="collectTap"
+            @comment="seeMore"
+            @star="starTap"
+            @enlarge="enlargeTap"
+            @seeMore="seeMore"
+            @seeUserInfo="seeUserInfo"
+          ></tweet-item>
+        </view>
+      </van-tab>
+      <van-tab title="猫猫收藏" name="cats">
+        <view class="cats">
+          <cat-item
+            v-for="(i, index) in cats"
+            :info="i"
+            @tap="seeCatdetail(i.catID)"
+          ></cat-item>
+        </view>
+      </van-tab>
+      <van-tab title="动态收藏" name="tweet_c"
+        ><view class="tweet_c">
+          <tweet-item
+            v-for="(i, index) in showlist2"
+            :item="i"
+            @collect="collectTap"
+            @comment="seeMore"
+            @star="starTap"
+            @enlarge="enlargeTap"
+            @seeMore="seeMore"
+            @seeUserInfo="seeUserInfo"
+          ></tweet-item> </view
+      ></van-tab>
+    </van-tabs>
+    <enlarge-img
+      :visible="enlargeVisible"
+      :imgSrc="imgSrc"
+      @enlargeClose="enlargeClose"
+    ></enlarge-img>
+    <van-toast id="van-toast" />
+    <back-top v-if="backTopVisible" @hide="backTopVisible = false"></back-top>
+  </view>
+</template>
+
+<style lang="less"></style>
+<script>
+import wepy from '@wepy/core';
+import tweetMixin from 'common/tweetMixin';
+wepy.page({
+  mixins: [tweetMixin],
+  data: {
+    tweets_my: [],
+    tweets_co: [],
+    cats: [],
+    currentTab: 'tweet_m',
+    showlist1: [],
+    showlist2: [],
+    //图片放大
+    enlargeVisible: false,
+    imgSrc: '',
+    //回到顶端
+    backTopVisible: false,
+  },
+  methods: {
+    getData() {
+      const src = [
+        'https://wx2.sinaimg.cn/mw690/6cd6d028ly4ggv1ek5z72j20c80c8aas.jpg',
+        'https://wx3.sinaimg.cn/mw690/6b1394a6gy1ggwmxfa7v7j20go09djxt.jpg',
+      ];
+      const index = parseInt(Math.random() * 2);
+      const tweets = [
+        {
+          tweetTime: '2020.07.14 20:22',
+          collectCount: 5,
+          transmitCount: 0,
+          commentCount: 5,
+          starCount: 6,
+          id: 0,
+          text: '毕业了',
+          imgs: [src[index]],
+          video: '',
+          topic: '666',
+        },
+        {
+          tweetTime: '2020.07.14 20:22',
+          collectCount: 5,
+          transmitCount: 0,
+          commentCount: 5,
+          starCount: 6,
+          id: 1,
+          text: '毕业了',
+          imgs: [],
+          video:
+            'https://f.video.weibocdn.com/TZHNe9o7lx07ESUanuiQ0104120323oJ0E020.mp4?label=mp4_1080p&template=1920x1080.25.0&trans_finger=daa7c63436091a9dfe20e4b554312cac&ori=2&Expires=1595165248&ssig=4a%2Fv8rCLP0&KID=unistore,video',
+        },
+        {
+          tweetTime: '2020.07.14 20:22',
+          collectCount: 5,
+          transmitCount: 0,
+          commentCount: 5,
+          starCount: 6,
+          id: 2,
+          text:
+            '抖音：7月打击色情黑产账号超12万】7 月至今，抖音安全中心永久封禁相关账号 12.7 万个，相关设备 3.6 万台，根据情节程度梯度处罚账号 2.7 万个。……详情点击',
+          imgs: [src[index], src[index]],
+          video: '',
+          topic: '666',
+        },
+        {
+          tweetTime: '2020.07.14 20:22',
+          collectCount: 5,
+          transmitCount: 0,
+          commentCount: 5,
+          starCount: 6,
+          id: 3,
+          text: '毕业了',
+          imgs: [src[index], src[index], src[index]],
+          video: '',
+          topic: '666',
+        },
+        {
+          tweetTime: '2020.07.14 20:22',
+          collectCount: 5,
+          transmitCount: 0,
+          commentCount: 5,
+          starCount: 6,
+          id: 4,
+          text: '毕业了',
+          imgs: [src[index], src[index], src[index], src[index]],
+          video: '',
+        },
+      ];
+      const catCollects = [
+        {
+          catID: 0,
+          name: '大狐狸',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          location: '竹轩',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+        {
+          catID: 1,
+          name: '666',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          location: '竹轩',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+        {
+          catID: 2,
+          name: '666',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          location: '竹轩',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+        {
+          catID: 3,
+          name: '777',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          location: '竹轩',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+        {
+          catID: 4,
+          name: '000',
+          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
+          sex: '雄性',
+          color: '黑白相间',
+          location: '竹轩',
+          state: 0,
+          sterilized: false, //绝育情况
+          birthday: '2018.08.22',
+          changeTime: '2019.08.22', //状改变的时间，
+          witnessTime: '2018.08.28', //第一次目击时间
+          appearance: '黑白相间',
+          character: '大方，不怕生', //个性特征
+        },
+      ];
+      const userinfo = {
+        name: '用户1',
+        id: 1,
+        signature: '个性签名', //个性签名
+        userbgc: 'https://ftp.bmp.ovh/imgs/2020/07/fabb688fb0d11562.jpg', //主页背景图片
+        avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+        campus: 'cqut',
+        sex: '男',
+      };
+      this.tweets_my = this.tweets_co = tweets.map((item) => {
+        return {
+          ...item,
+          userinfo,
+        };
+      });
+      this.showlist1 = this.tweets_my.slice(0, 5);
+      this.showlist2 = this.tweets_co.slice(0, 5);
+      this.cats = catCollects;
+    },
+    onChange({
+      $wx: {
+        detail: { name },
+      },
+    }) {
+      console.log(name);
+      this.currentTab = name;
+      const titles = {
+        tweet_m: '我的动态',
+        cats: '猫猫收藏',
+        tweet_c: '动态收藏',
+      };
+      wx.setNavigationBarTitle({
+        title: titles[name],
+      });
+    },
+    // //点击图片放大
+    enlargeTap(src) {
+      // console.log(src);
+      this.imgSrc = src;
+      this.enlargeVisible = true;
+    },
+    //关闭放大
+    enlargeClose() {
+      this.enlargeVisible = false;
+      this.imgSrc = '';
+    },
+    //查看猫猫详情
+    seeCatdetail(id) {
+      this.$navigate('/pages/catdetail?id=' + id);
+    },
+  },
+  onLoad({ tab }) {
+    this.currentTab = tab;
+    console.log(tab);
+    wx.showNavigationBarLoading();
+    this.getData();
+    wx.hideNavigationBarLoading();
+  },
+  onPageScroll({ scrollTop }) {
+    // console.log(scrollTop)
+    if (scrollTop > 300) {
+      this.backTopVisible = true;
+    } else this.backTopVisible = false;
+  },
+   //上拉触底 加载更多
+  onReachBottom() {
+      console.log('加载更多');
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '我的动态',
+      usingComponents: {
+           "van-tabs": '../components/vant/tabs',
+           "van-tab": '../components/vant/tab',
+            "van-toast": '../components/vant/toast',
+            "tweet-item":'../components/com/tweet_item',
+            "cat-item":'../components/com/cat_item',
+            "enlarge-img":'../components/com/enlarge_img',
+            "back-top":'../components/com/back_top/back_top',
+      }
+}
+</config>

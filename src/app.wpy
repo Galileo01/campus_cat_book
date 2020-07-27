@@ -3,7 +3,9 @@
   display: flex;
   flex-direction: column;
   font-size: 13px;
-  --gcolor:#409EFF;
+  --theme: #409eff;
+  --white: #fff;
+  --default: #f7f8fa;
 }
 </style>
 
@@ -18,17 +20,21 @@ wepy.app({});
 <config>
 {
     pages: [
-       
-      "pages/community",
-      'pages/userinfo',
-      'pages/index',
-      'pages/profile',
-      'pages/catdetail',
-      
-       'pages/tweet_detail',
-       'pages/createtweet_page',
-       
      
+       
+      'pages/profile',
+       'pages/feedback',
+     'pages/right_apply',
+       'pages/feedback_detail',
+      'pages/user_more_data',
+      'pages/community',
+      'pages/userinfo',
+      'pages/index',    
+      'pages/catdetail',
+      'pages/tweet_detail',
+      'pages/createtweet_page',
+      'pages/about',
+      
     ],
     window: {
       backgroundTextStyle: 'light',

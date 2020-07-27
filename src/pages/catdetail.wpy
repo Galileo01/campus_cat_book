@@ -92,7 +92,7 @@
       </van-image>
     </view>
     <view class="box">
-      <view class="icon" @tap="submitClick">
+      <view class="icon" @tap="tweetClick">
         <van-icon name="edit" size="60rpx" />
         <text>分享动态</text>
       </view>
@@ -187,7 +187,9 @@ wepy.page({
         character: '大方，不怕生', //个性特征
       };
     },
-    submitClick() {},
+    tweetClick() {
+      this.$navigate('/pages/createtweet_page?topic='+this.baseInfo.name);
+    },
     //点击收藏
     collectClick() {
       if (this.isCollected) {
@@ -197,8 +199,6 @@ wepy.page({
         this.isCollected = true;
       }
     },
-    //在地图上显示 对应的位置
-    locationClick() {},
   },
   computed: {
     stateText() {

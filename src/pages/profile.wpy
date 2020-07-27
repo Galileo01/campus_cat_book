@@ -1,20 +1,282 @@
 <template>
-  <div class="container">
-    个人中心
-  </div>
+  <view class="profile container">
+    <user-baseinfo
+      :userinfo="userinfo"
+      mode="my"
+      @avatarTap="showEnlarge"
+      @edit="editInfo"
+    ></user-baseinfo>
+    <view class="oprations">
+      <van-cell-group>
+        <van-cell title="我的动态" is-link @tap="seeMoreData('tweet_m')" />
+        <van-cell title="猫猫收藏" is-link @tap="seeMoreData('cats')" />
+        <van-cell title="动态收藏" is-link @tap="seeMoreData('tweet_c')" />
+        <van-cell title="权限申请" is-link @tap="$navigate('/pages/right_apply')"/>
+        <van-cell title="问题反馈" is-link @tap="$navigate('/pages/feedback')"/>
+        <van-cell title="关于" is-link  @tap="$navigate('/pages/about')"/>
+      </van-cell-group>
+    </view>
+    <!--头像放大-->
+    <van-popup
+      :show="enlargeVisible"
+      closeable
+      @close="closeEnlarge"
+      class="enlarge_img"
+    >
+      <view class="preview">
+        <image :src="imgSrc"></image>
+        <view class="btns">
+          <van-button
+            type="info"
+            size="small"
+            @tap="uploadTap"
+            v-if="currentMode === 'show'"
+            >上传</van-button
+          >
+          <van-button type="info" size="small" @tap="uploadImg" v-else
+            >确认上传</van-button
+          >
+          <van-button
+            type="default"
+            size="small"
+            @tap="downloadImg"
+            :disabled="!imgSrc"
+            v-if="currentMode === 'show'"
+            >下载</van-button
+          >
+        </view>
+      </view>
+    </van-popup>
+    <!--信息编辑 弹框-->
+    <van-popup
+      :show="editPopupVisible"
+      closeable
+      @close="closeEdit"
+      class="info_edit"
+      position="bottom"
+      custom-style="height: 100%;"
+    >
+      <van-cell-group class="form">
+        <van-field
+          :value="formData.name"
+          label="昵称"
+          placeholder="请输入昵称"
+          clearable
+          @change="inputChange($event, 'name')"
+          class="name"
+        />
+        <van-field
+          :value="formData.campus"
+          label="学校"
+          placeholder="请输入学校"
+          clearable
+          @change="inputChange($event, 'campus')"
+        />
+        <van-field
+          :value="signature"
+          label="个性签名"
+          type="textarea"
+          placeholder="请输入个性签名"
+          autosize
+          clearable
+          @change="inputChange($event, 'signature')"
+        />
+        <van-cell title="性别" class="sex">
+          <van-radio-group
+            :value="formData.sex"
+            @change="inputChange($event, 'sex')"
+          >
+            <van-radio name="female">男</van-radio>
+            <van-radio name="male">女</van-radio>
+          </van-radio-group>
+        </van-cell>
+      </van-cell-group>
+      <view class="btns">
+        <van-button type="danger" size="small" color="#E6A23C" @tap="closeEdit"
+          >取消</van-button
+        >
+        <van-button type="info" size="small" color="#409eff" @tap="submit"
+          >提交</van-button
+        >
+      </view>
+    </van-popup>
+    <van-toast id="van-toast" />
+  </view>
 </template>
+<style lang="less">
+.profile {
+  .enlarge_img {
+    .preview {
+      background-color: rgba(0, 0, 0, 0.7); /*和遮罩层 颜色一致 */
+      position: relative;
+    }
+    .btns {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+  .info_edit {
+    input,
+    textarea {
+      width: 70% !important;
+    }
+    .sex {
+      .van-cell__title {
+        -webkit-flex: none;
+        flex: none;
+      }
+      van-radio-group {
+        display: flex;
+        padding: 10rpx 20rpx;
+        margin-left: 90rpx;
+        .van-radio {
+          width: 30vw;
+        }
+      }
+    }
+    .btns {
+      position: fixed;
+      bottom: 40rpx;
+      left: 50%;
+      transform: translate(-50%);
+      display: flex;
 
+      justify-content: space-between;
+      width: 60vw;
+    }
+  }
+}
+</style>
 <script>
 import wepy from '@wepy/core';
-
-wepy.page({});
+import Toast from 'components/vant/toast/toast';
+wepy.page({
+  data: {
+    userinfo: {},
+    enlargeVisible: false,
+    imgSrc: '',
+    currentMode: 'show', //当前 头像放大框的模式
+    editPopupVisible: false,
+    formData: {},
+  },
+  methods: {
+    getData() {
+      const userinfo = {
+        name: '用户1',
+        id: 1,
+        signature: '个性签名', //个性签名
+        userbgc: 'https://ftp.bmp.ovh/imgs/2020/07/fabb688fb0d11562.jpg', //主页背景图片
+        avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
+        campus: 'cqut',
+        sex: 'female',
+      };
+      this.userinfo = { ...userinfo }; //保证两个变量不会指向一个引用
+      this.formData = { ...userinfo };
+    },
+    showEnlarge(src) {
+      this.enlargeVisible = true;
+      this.imgSrc = src;
+    },
+    closeEnlarge() {
+      this.enlargeVisible = false;
+      this.imgSrc = '';
+      this.currentMode = 'show';
+    },
+    //上传头像图片
+    uploadTap() {
+      wx.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera'],
+        success: function (res) {
+          const tempFilePaths = res.tempFilePaths;
+          console.log(tempFilePaths);
+          this.imgSrc = tempFilePaths;
+          this.currentMode = 'upload';
+        }.bind(this),
+      });
+    },
+    uploadImg() {
+      Toast.loading({
+        mask: true,
+        duration: 0, //一致显示toast
+        message: '上传中...',
+      });
+      //请求成功 后关闭，模拟
+      const timer = setTimeout(() => {
+        Toast.clear();
+        clearTimeout(timer);
+        this.userinfo.avatar = this.imgSrc;
+        this.closeEnlarge();
+      }, 500);
+    },
+    //下载到本地
+    downloadImg() {
+      wx.getImageInfo({
+        src: this.imgSrc,
+        success: function (ret) {
+          var path = ret.path;
+          wx.saveImageToPhotosAlbum({
+            filePath: path,
+            success(result) {
+              console.log(result);
+              this.$emit('downloadSuccess');
+            },
+          });
+        },
+      });
+    },
+    editInfo() {
+      this.editPopupVisible = true;
+    },
+    //每个表单字段的 change
+    inputChange({ $wx: { detail } }, key) {
+      console.log(detail, key);
+      this.formData[key] = detail;
+    },
+    submit() {
+      Toast.loading({
+        mask: true,
+        duration: 0, //一致显示toast
+        message: '提交中...',
+      });
+      //请求成功 后关闭，模拟
+      const timer = setTimeout(() => {
+        Toast.clear();
+        clearTimeout(timer);
+        this.getData(); //刷新数据
+        this.closeEdit();
+      }, 500);
+    },
+    closeEdit() {
+      this.editPopupVisible = false;
+      this.formData = this.userinfo;
+    },
+    seeMoreData(tab) {
+      this.$navigate('/pages/user_more_data?tab=' + tab);
+    },
+  },
+  onLoad() {
+    this.getData();
+  },
+});
 </script>
-<style lang="less"></style>
+
 <config>
 {
     navigationBarTitleText: '个人中心',
     usingComponents: {
-     
+      "user-baseinfo":'../components/com/user_baseinfo',
+      "van-cell":'../components/vant/cell',
+      "van-cell-group":'../components/vant/cell-group',
+      "van-popup":'../components/vant/popup',
+      "van-icon":'../components/vant/icon',
+      "van-button":'../components/vant/button',
+      "van-toast":'../components/vant/toast',
+      'van-radio':'../components/vant/radio',
+      'van-radio-group':'../components/vant/radio-group',
+      'van-field':'../components/vant/field',
     }
 }
 </config>

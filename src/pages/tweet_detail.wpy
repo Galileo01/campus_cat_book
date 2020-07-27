@@ -11,7 +11,10 @@
     <view class="comments">
       <view class="comment-item" v-for="(item, index) in comments">
         <view class="avater">
-          <image :src="item.userinfo.avatar" @tap="seeUserInfo(item.userinfo.id)"></image>
+          <image
+            :src="item.userinfo.avatar"
+            @tap="seeUserInfo(item.userinfo.id)"
+          ></image>
         </view>
         <view class="content">
           <view>{{ item.userinfo.name }}:</view>
@@ -43,19 +46,11 @@
       </view>
     </view>
     <!--图片放大-->
-    <van-popup
-      :show="imgDialogVisible"
-      @close="closeImgDialog"
-      closeable
-      class="img-popup"
-    >
-      <view class="preview">
-        <image :src="imgSrc"></image>
-        <view class="download">
-          <van-icon name="down" size="40rpx" color="#fff" @tap="downloadImg" />
-        </view>
-      </view>
-    </van-popup>
+    <enlarge-img
+      :visible="imgDialogVisible"
+      :imgSrc="imgSrc"
+      @enlargeClose="closeImgDialog"
+    ></enlarge-img>
     <!--评论弹框-->
     <van-popup
       :show="commentInputVivisble"
@@ -85,6 +80,11 @@
     </van-popup>
     <!--toast 弹框-->
     <van-toast id="van-toast" />
+    <back-top
+      v-if="backTopVisible"
+      @hide="backTopVisible = false"
+      bottom="100"
+    ></back-top>
   </view>
 </template>
 
@@ -97,7 +97,7 @@
       padding: 20rpx 20rpx 10rpx 20rpx;
       margin: 10rpx 0;
       background-color: #fff;
-      font-size: 11px;
+      font-size: 12px;
       display: flex;
       .avater {
         image {
@@ -108,7 +108,7 @@
       }
       .content {
         margin-left: 40rpx;
-        width: 100%;
+        width: 600rpx;
         .text {
           padding: 10rpx 0;
         }
@@ -139,14 +139,14 @@
     position: fixed;
     width: 100vw;
     bottom: 0;
-    margin-top: 10rpx;
-    padding-top: 10rpx;
+    // padding-top: 10rpx;
     display: flex;
     height: 80rpx;
+    align-items: center;
     justify-content: space-around;
     border-top: 2rpx #d7d8da solid;
     background-color: #fff;
-    font-size: 13px;
+    font-size: 14px;
     .btn {
       display: flex;
       align-items: center;
@@ -156,22 +156,6 @@
       }
     }
   }
-  .preview {
-    background-color: rgba(0, 0, 0, 0.7); /*和遮罩层 颜色一致 */
-    .download {
-      background-color: none;
-      .van-icon {
-        position: absolute;
-        right: 16px;
-        bottom: 40rpx;
-        color: #fff;
-      }
-    }
-  }
-  .img-popup .van-popup .van-icon {
-    color: #fff;
-  }
-
   .comment-popup .van-popup .van-icon {
     z-index: 99;
     font-size: 20px;
@@ -207,6 +191,7 @@ wepy.page({
     imgDialogVisible: false,
     commentInputVivisble: false,
     mycomment: '',
+    backTopVisible: false,
   },
   methods: {
     getData() {
@@ -276,7 +261,7 @@ wepy.page({
         },
       ];
       this.tweetInfo = data;
-      this.comments = comments.map((item) => {
+      this.comments = [...comments, ...comments].map((item) => {
         return {
           ...item,
           userinfo: {
@@ -290,7 +275,6 @@ wepy.page({
     },
     enlargeTap(src) {
       // console.log(src);
-      if (this.btnsVisible) this.hideBtns();
       this.imgSrc = src;
       this.imgDialogVisible = true;
     },
@@ -321,18 +305,16 @@ wepy.page({
     starComment(id) {
       Toast('点赞成功');
       console.log(id);
-      for(const item of this.comments)
-      {
-          if(item.commentID===id)
-          {
-              item.star++;
-              break ;
-          }
+      for (const item of this.comments) {
+        if (item.commentID === id) {
+          item.star++;
+          break;
+        }
       }
     },
-    seeUserInfo(id){
-        console.log(id);
-        this.$navigate('/pages/userinfo?id='+id);
+    seeUserInfo(id) {
+      console.log(id);
+      this.$navigate('/pages/userinfo?id=' + id);
     },
     sendComment() {
       if (this.mycomment) {
@@ -365,12 +347,17 @@ wepy.page({
       }
     },
   },
-  onLoad({ id }) {
+  onLoad({ id}) {
     console.log(id);
     this.id = id;
     wx.showNavigationBarLoading();
     this.getData();
     wx.hideNavigationBarLoading();
+  },
+  onPageScroll({ scrollTop }) {
+    if (scrollTop > 300) {
+      this.backTopVisible = true;
+    } else this.backTopVisible = false;
   },
 });
 </script>
@@ -380,6 +367,9 @@ wepy.page({
     navigationBarTitleText: '动态详情',
     usingComponents: {
      'tweet-item':'../components/com/tweet_item',
+      'enlarge-img':'../components/com/enlarge_img',
+       'back-top':'../components/com/back_top/back_top',
+
      'van-icon':'../components/vant/icon',
        "van-popup": '../components/vant/popup',
        "van-field":'../components/vant/field',

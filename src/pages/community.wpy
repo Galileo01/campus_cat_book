@@ -44,7 +44,7 @@
 </template>
 <style lang="less">
 .community {
-  background-color: #f7f8fa;
+  background-color: var(--default);
   font-size: 13px;
   image {
     display: block;
@@ -55,7 +55,7 @@
     right: 10rpx;
     top: 10rpx;
     .van-icon {
-      background-color: #409eff;
+      background-color: var(--theme);
       border-radius: 50%;
     }
   }

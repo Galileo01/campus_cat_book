@@ -406,7 +406,7 @@ wepy.page({
       }
     },
   },
-  onLoad({ type }) {
+  onLoad({ type ,topic}) {
     console.log(type);
     if (type) {
       this.type = type;
@@ -414,6 +414,10 @@ wepy.page({
         //进入页面时 已经选好 媒体类型，显示选择框
         this.chooseImg();
       } else if (type == 'video') this.chooseVideo();
+    }
+    if(topic)
+    {
+      this.topics.push(topic);
     }
   },
 });
