@@ -1,20 +1,16 @@
 <style lang="less">
 .container {
-  display: flex;
-  flex-direction: column;
-  font-size: 13px;
-  --theme: #409eff;
-  --white: #fff;
-  --default: #f7f8fa;
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    --theme: #409eff;
+    --white: #fff;
+    --default: #f7f8fa;
 }
 </style>
 
 <script>
 import wepy from '@wepy/core';
-import vuex from '@wepy/x';
-
-wepy.use(vuex);
-
 wepy.app({});
 </script>
 <config>

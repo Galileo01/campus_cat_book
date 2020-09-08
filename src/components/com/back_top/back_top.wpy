@@ -1,6 +1,6 @@
 <template>
   <view class="back_top" @tap="backTop" :style="{ bottom: bottom + 'rpx' }">
-    <image src="./backtop.png"></image>
+    <image src="./backtop.png" class="back-icon"></image>
   </view>
 </template>
 
@@ -13,7 +13,7 @@
   width: 64rpx;
   height: 64rpx;
 
-  image {
+  .back-icon {
     display: block;
     width: 64rpx;
     height: 64rpx;

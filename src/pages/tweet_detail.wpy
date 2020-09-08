@@ -9,39 +9,50 @@
       ></tweet-item>
     </view>
     <view class="comments">
-      <view class="comment-item" v-for="(item, index) in comments">
+      <view
+        class="comment-item"
+        v-for="(item, index) in comments"
+      >
         <view class="avater">
           <image
-            :src="item.userinfo.avatar"
-            @tap="seeUserInfo(item.userinfo.id)"
+            :src="avatarUrls[index]"
+            @tap="seeUserInfo(item.userinfo._id)"
           ></image>
         </view>
         <view class="content">
           <view>{{ item.userinfo.name }}:</view>
           <view class="text">{{ item.content }}</view>
           <view class="bottom">
-            <view class="left"
-              ><text class="time">{{ item.time }}</text>
-              <text class="campus">{{ item.userinfo.campus }}</text></view
-            >
+            <view class="left"><text class="time">{{ item.created_time }}</text>
+              <text class="campus">{{ item.userinfo.campus }}</text>
+            </view>
             <view class="right">
               <van-icon
                 name="good-job-o"
                 size="30rpx"
-                @tap="starComment(item.commentID)"
+                @tap="starComment(item._id)"
               />
-              <text>{{ item.star }}</text>
+              <text>{{ item.starCount }}</text>
             </view>
           </view>
         </view>
       </view>
     </view>
     <view class="btns">
-      <view class="btn" @tap="collectTap"> <text>收藏</text></view>
-      <view class="btn" @tap="showCommentInput">
-        <text>评论</text>
+      <view
+        class="btn collect"
+        @tap="collectTap"
+      > <text>{{isCollected?'取消':''}}收藏</text></view>
+      <view
+        class="btn"
+        @tap="showCommentInput"
+      >
+        <text>添加评论</text>
       </view>
-      <view class="btn" @tap="starTap">
+      <view
+        class="btn"
+        @tap="starTap"
+      >
         <text>点赞</text>
       </view>
     </view>
@@ -74,12 +85,9 @@
           type="info"
           size="small"
           @tap="sendComment"
-          >发送</van-button
-        >
+        >发送</van-button>
       </view>
     </van-popup>
-    <!--toast 弹框-->
-    <van-toast id="van-toast" />
     <back-top
       v-if="backTopVisible"
       @hide="backTopVisible = false"
@@ -91,14 +99,17 @@
 <style lang="less">
 .tweet_detail {
   background-color: #f7f8fa;
+
   .comments {
     margin-bottom: 80rpx;
+
     .comment-item {
       padding: 20rpx 20rpx 10rpx 20rpx;
       margin: 10rpx 0;
       background-color: #fff;
       font-size: 12px;
       display: flex;
+
       .avater {
         image {
           width: 60rpx;
@@ -106,26 +117,33 @@
           border-radius: 50%;
         }
       }
+
       .content {
         margin-left: 40rpx;
         width: 600rpx;
+
         .text {
           padding: 10rpx 0;
         }
+
         .bottom {
           display: flex;
           justify-content: space-between;
+
           .time {
             color: #a497a6;
             font-size: 9px;
           }
+
           .campus {
             margin-left: 10rpx;
             color: #409eff;
           }
+
           .right {
             margin-right: 20rpx;
             display: flex;
+
             text {
               margin-left: 5rpx;
             }
@@ -147,29 +165,40 @@
     border-top: 2rpx #d7d8da solid;
     background-color: #fff;
     font-size: 14px;
+
     .btn {
       display: flex;
       align-items: center;
+
       text {
         margin-left: 10rpx;
         color: #409eff;
       }
     }
+    .collect {
+      .isCollect {
+        color: #353535;
+      }
+    }
   }
+
   .comment-popup .van-popup .van-icon {
     z-index: 99;
     font-size: 20px;
   }
+
   .comment-input {
     padding: 20rpx;
     width: 100%;
     height: 30vh;
     position: relative;
+
     van-field,
     .van-field__body,
     textarea {
       width: 80vw;
     }
+
     .send {
       position: absolute;
       bottom: 20rpx;
@@ -181,7 +210,15 @@
 
 <script>
 import wepy from '@wepy/core';
-import Toast from 'components/vant/toast/toast';
+import { getById, star } from 'network/tweet';
+import { collectTweet, cancelCollectTweet } from 'network/user';
+import {
+  getByTweetId as getCommentsByTweetId,
+  createComment,
+  starComment,
+} from 'network/comment';
+import { getStaticUrl } from 'common/utils';
+import store from 'store';
 wepy.page({
   data: {
     id: 0,
@@ -192,86 +229,35 @@ wepy.page({
     commentInputVivisble: false,
     mycomment: '',
     backTopVisible: false,
+    isCollected: false,
+  },
+  computed: {
+    avatarUrls() {
+      if (this.comments.length === 0) return [];
+      else
+        return this.comments.map((item) =>
+          getStaticUrl('user', item.userinfo.avatar)
+        );
+    },
   },
   methods: {
-    getData() {
-      const data = {
-        userinfo: {
-          name: 'user1',
-          campus: 'cqut',
-          id: 1,
-          avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
-        },
-        tweetTime: '2020.07.14 20:22',
-        collectCount: 5,
-        transmitCount: 0,
-        commentCount: 5,
-        starCount: 6,
-        id: 2,
-        text: '毕业了',
-        imgs: [
-          'https://wx2.sinaimg.cn/mw690/6cd6d028ly4ggv1ek5z72j20c80c8aas.jpg',
-          'https://wx2.sinaimg.cn/mw690/6cd6d028ly4ggv1ek5z72j20c80c8aas.jpg',
-        ],
-        video: '',
-        topic: '666',
-      };
-      const comments = [
-        {
-          userID: 2,
-          content: '666',
-          time: '2020 0717 19:01',
-          star: 0,
-          commentID: 1,
-        },
-        {
-          userID: 3,
-          content: '666',
-          time: '2020 0717 19:01',
-          star: 2,
-          commentID: 2,
-        },
-        {
-          userID: 2,
-          content: '666',
-          time: '2020 0717 19:01',
-          star: 0,
-          commentID: 3,
-        },
-        {
-          userID: 2,
-          content: '666',
-          time: '2020 0717 19:01',
-          star: 0,
-          commentID: 4,
-        },
-        {
-          userID: 2,
-          content: '666',
-          time: '2020 0717 19:01',
-          star: 0,
-          commentID: 5,
-        },
-        {
-          userID: 2,
-          content: '666',
-          time: '2020 0717 19:01',
-          star: 0,
-          commentID: 6,
-        },
-      ];
-      this.tweetInfo = data;
-      this.comments = [...comments, ...comments].map((item) => {
-        return {
-          ...item,
-          userinfo: {
-            name: '张三',
-            id: 1,
-            campus: 'cqut',
-            avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
-          },
-        };
-      });
+    //获取评论
+    async getComments() {
+      const res = await getCommentsByTweetId(this.id);
+      if (res.data) {
+        this.comments = res.data;
+      } else {
+        console.log(res.msg);
+      }
+    },
+    //获取 细腻些
+    async getTweetInfo() {
+      const res = await getById(this.id);
+      if (res.data) {
+        this.tweetInfo = res.data;
+      } else {
+        console.log(res.msg);
+      }
     },
     enlargeTap(src) {
       // console.log(src);
@@ -296,18 +282,54 @@ wepy.page({
       this.commentInputVivisble = false;
       this.mycomment = '';
     },
-    starTap() {
-      Toast('点赞成功');
+    async starTap() {
+      const res = await star(this.id);
+      if (res.data)
+        wx.showToast({
+          title: '点赞成功',
+          icon: 'none',
+        });
+      else {
+        wx.showToast({
+          title: '点赞失败',
+          icon: 'none',
+        });
+        console.log(res.msg);
+      }
     },
-    collectTap() {
-      Toast('收藏成功');
+    async collectTap() {
+      let oprate;
+      //优化逻辑
+      oprate = this.isCollected ? cancelCollectTweet : collectTweet;
+      const res = await oprate(this.id);
+      if (res.data) {
+        wx.showToast({
+          title: '操作成功',
+          icon: 'none',
+        });
+        this.isCollected = this.isCollected ? false : true; //改变状态
+      } else {
+        wx.showToast({
+          title: '操作失败',
+          icon: 'none',
+        });
+      }
     },
-    starComment(id) {
-      Toast('点赞成功');
-      console.log(id);
+    async starComment(id) {
+      const res = await starComment(id);
+      if (res.msg)
+        return wx.showToast({
+          title: '点赞失败',
+          icon: 'none',
+        });
+      wx.showToast({
+        title: '点赞成功',
+        icon: 'none',
+      });
+
       for (const item of this.comments) {
-        if (item.commentID === id) {
-          item.star++;
+        if (item._id === id) {
+          item.starCount++;
           break;
         }
       }
@@ -316,43 +338,46 @@ wepy.page({
       console.log(id);
       this.$navigate('/pages/userinfo?id=' + id);
     },
-    sendComment() {
+    //创建 评论
+    async sendComment() {
       if (this.mycomment) {
-        Toast.loading({
-          mask: true,
-          duration: 0, //一致显示toast
-          message: '发送中...',
+        wx.showLoading({
+          title: '发送中',
         });
-        //请求成功 后关闭，模拟
-        const timer = setTimeout(() => {
-          this.comments.push({
-            userID: 2,
-            content: this.mycomment,
-            time: '2020 0723 19:01',
-            star: 0,
-            commentID: 7,
-            userinfo: {
-              name: '王五',
-              id: 2,
-              campus: 'cqut',
-              avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
-            },
+
+        const res = await createComment({
+          tweet_id: this.id,
+          content: this.mycomment,
+        });
+        console.log(res);
+        if (res.data) {
+          wx.showToast({
+            title: '评论成功',
+            icon: 'none',
           });
-          this.closeInput();
-          Toast.clear();
-          clearTimeout(timer);
-        }, 500);
+          this.getComments();
+        }
       } else {
-        Toast.fail('评论内容为空');
+        wx.showToast({
+          title: '评论为空',
+          icon: 'none',
+        });
       }
     },
   },
-  onLoad({ id}) {
+  onLoad({ id }) {
     console.log(id);
     this.id = id;
     wx.showNavigationBarLoading();
-    this.getData();
+    this.getTweetInfo();
+    this.getComments();
     wx.hideNavigationBarLoading();
+  },
+  onShow() {
+    //保证 当前 页面使用的用户数据是最新的
+    store.infoRefresh().then(() => {
+      if (store.userinfo.tweets_co.includes(this.id)) this.isCollected = true;
+    });
   },
   onPageScroll({ scrollTop }) {
     if (scrollTop > 300) {
@@ -374,6 +399,5 @@ wepy.page({
        "van-popup": '../components/vant/popup',
        "van-field":'../components/vant/field',
        "van-button":'../components/vant/button',
-         "van-toast":'../components/vant/toast',
     }
 }</config>

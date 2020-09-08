@@ -14,6 +14,7 @@ module.exports = {
       'common':path.resolve(__dirname, 'src/common'),
       'network':path.resolve(__dirname, 'src/network'),
       'components':path.resolve(__dirname, 'src/components'),
+      'store': path.resolve(__dirname, 'src/store'),
       
     },
     aliasFields: ['wepy', 'weapp'],

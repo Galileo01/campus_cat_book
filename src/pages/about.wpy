@@ -1,91 +1,100 @@
 <template>
-  <view class="about container">
+<view class="about container">
     <view class="baseinfo">
-      <image src="../assets/img/icon.png"></image>
-      <view class="texts">
-        <text>校园猫猫图鉴</text>
-        <text>版本：体验版 v 0.6.7</text>
-        <text>
-          一个主要收集、展示、维护校园流浪猫猫信息的小程序
-        </text>
-        <text>作者：ltthz</text>
-        <text>github仓库：https://github.com/Galileo01/campus_cat_book</text>
-      </view>
-      <view class="rate-wapper">
-        <van-rate
-          :value="rate"
-          bind:change="onChange"
-          allow-half
-          color="#409EFF"
-          :size="25"
-        />
-        <van-button type="info" size="small" @tap="summitRate">提交</van-button>
-      </view>
+        <image src="../assets/img/icon.png"></image>
+        <view class="texts">
+            <text>校园猫猫图鉴</text>
+            <text>版本：体验版 v 0.6.7</text>
+            <text>
+                一个主要收集、展示、维护校园流浪猫猫信息的小程序
+            </text>
+            <text>作者：ltthz</text>
+            <text>github仓库：https://github.com/Galileo01/campus_cat_book</text>
+        </view>
+        <view class="rate-wapper">
+            <van-rate :value="rate" bind:change="onChange" allow-half color="#409EFF" :size="25" />
+            <van-button type="info" size="small" @tap="summitRate">提交</van-button>
+        </view>
     </view>
-     <van-toast id="van-toast" />
-  </view>
+
+</view>
 </template>
 
 <style lang="less">
 .about {
-  margin-top: 40rpx;
-  .flex-col {
-    display: flex;
-    flex-direction: column;
-  }
-  .baseinfo {
-    justify-content: center;
-    .flex-col();
-    align-items: center;
+    margin-top: 40rpx;
 
-    image {
-      width: 300rpx;
-      height: 300rpx;
-      border-radius: 50%;
-      -webkit-box-shadow: 0 0 10px #ddd;
-      box-shadow: 0 0 10px #ddd;
-      padding: 10px;
-      border-radius: 50%;
+    .flex-col {
+        display: flex;
+        flex-direction: column;
     }
-    .texts {
-      margin-top: 20rpx;
-      text-align: center;
-      .flex-col();
-      text:first-of-type {
-        font-size: 16px;
-        color: var(--theme);
-      }
-      text {
-        margin-top: 20rpx;
-      }
+
+    .baseinfo {
+        justify-content: center;
+        .flex-col();
+        align-items: center;
+
+        image {
+            width: 300rpx;
+            height: 300rpx;
+            border-radius: 50%;
+            -webkit-box-shadow: 0 0 10px #ddd;
+            box-shadow: 0 0 10px #ddd;
+            padding: 10px;
+            border-radius: 50%;
+        }
+
+        .texts {
+            margin-top: 20rpx;
+            text-align: center;
+            .flex-col();
+
+            text:first-of-type {
+                font-size: 16px;
+                color: var(--theme);
+            }
+
+            text {
+                margin-top: 20rpx;
+            }
+        }
+
+        .rate-wapper {
+            margin-top: 100rpx;
+            .flex-col();
+            align-items: center;
+
+            van-button {
+                margin-top: 40rpx;
+            }
+        }
     }
-    .rate-wapper {
-      margin-top: 100rpx;
-      .flex-col();
-      align-items: center;
-      van-button{
-          margin-top:40rpx;
-      }
-    }
-  }
 }
 </style>
+
 <script>
 import wepy from '@wepy/core';
-import Toast from 'components/vant/toast/toast'
+
 wepy.page({
-  data: {
-    rate: 0,
-  },
-  methods: {
-    onChange({ $wx: { detail } }) {
-      console.log(detail);
-      this.rate=detail;
+    data: {
+        rate: 0,
     },
-    summitRate(){
-        Toast('评分成功');
-    }
-  },
+    methods: {
+        onChange({
+            $wx: {
+                detail
+            }
+        }) {
+            console.log(detail);
+            this.rate = detail;
+        },
+        summitRate() {
+            wx.showToast({
+                title: '评分成功',
+                icon: 'none'
+            })
+        }
+    },
 });
 </script>
 
@@ -94,8 +103,7 @@ wepy.page({
  navigationBarTitleText: '关于',
     usingComponents: {
          'van-rate':'../components/vant/rate',
-         'van-button':'../components/vant/button',
-         'van-toast':'../components/vant/toast',
+         'van-button':'../components/vant/button'
          }
 }
 </config>

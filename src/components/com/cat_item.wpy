@@ -1,12 +1,14 @@
 <template>
   <view class="cat-item">
-    <image :src="info.img"></image>
-    <view class="desc"
-      ><text class="name">{{ info.name }}</text>
+    <image :src="avatar"></image>
+    <view class="desc"><text class="name">{{ info.name }}</text>
       <!-- <text class="location">{{ info.location }}</text> -->
-      </view
-    >
-    <van-icon name="arrow" color="#409EFF" class="arrow" />
+    </view>
+    <van-icon
+      name="arrow"
+      color="#409EFF"
+      class="arrow"
+    />
   </view>
 </template>
 <style lang="less">
@@ -17,7 +19,7 @@
   margin: 20rpx 70rpx 10rpx 70rpx;
   padding: 5px;
   border-bottom: 1px solid #ebedf0;
-   background-color: #fff;
+  background-color: #fff;
   image {
     height: 90rpx;
     width: 90rpx;
@@ -41,15 +43,24 @@
 
 <script>
 import wepy from '@wepy/core';
+import { getStaticUrl } from 'common/utils';
 wepy.component({
   props: {
     info: {
       type: Object,
+      default: {},
     },
   },
-  created() {
-    // console.log(this);
+  computed: {
+    avatar() {
+      if (this.info && this.info.imgs && this.info.imgs.length !== 0) {
+        return getStaticUrl('cat', this.info.imgs[0]);
+      } else {
+        return '';
+      }
+    },
   },
+  
 });
 </script>
 

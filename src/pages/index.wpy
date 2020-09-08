@@ -23,35 +23,32 @@
         <text
           :class="{ current: activeCate === 'study' }"
           @tap="switchClick('study')"
-          >在校</text
-        >
+        >在校</text>
         <text
           :class="{ current: activeCate === 'graduate' }"
           @tap="switchClick('graduate')"
-          >毕业</text
-        >
+        >毕业</text>
         <text
           :class="{ current: activeCate === 'suspend' }"
           @tap="switchClick('suspend')"
-          >休学</text
-        >
+        >休学</text>
       </view>
-      <view class="switch tabs-fixed" v-if="isFixed">
+      <view
+        class="switch tabs-fixed"
+        v-if="isFixed"
+      >
         <text
           :class="{ current: activeCate === 'study' }"
           @tap="switchClick('study')"
-          >在校</text
-        >
+        >在校</text>
         <text
           :class="{ current: activeCate === 'graduate' }"
           @tap="switchClick('graduate')"
-          >毕业</text
-        >
+        >毕业</text>
         <text
           :class="{ current: activeCate === 'suspend' }"
           @tap="switchClick('suspend')"
-          >休学</text
-        >
+        >休学</text>
       </view>
       <view
         class="items-wapper"
@@ -62,7 +59,7 @@
           v-for="(item, index) in showList"
           :info="item"
           :key="index"
-          @tap="itemTap(item.catID)"
+          @tap="itemTap(item._id)"
         ></cat-item>
 
         <view class="empty-text">
@@ -99,9 +96,13 @@
         </view>
       </view>
     </van-popup>
-    <back-top v-if="backTopVisible" @hide="backTopVisible = false"></back-top>
+    <back-top
+      v-if="backTopVisible"
+      @hide="backTopVisible = false"
+    ></back-top>
   </view>
 </template>
+
 <style lang="less">
 .home {
   height: auto;
@@ -109,23 +110,30 @@
   view {
     font-size: 12px;
   }
+
   .camera {
     display: flex; //图标居中
   }
+
   .van-search__action {
-    background-color: transparent; /*去除图标tap时背景 */
+    background-color: transparent;
+    /*去除图标tap时背景 */
   }
+
   .items-wapper {
     padding-top: 20rpx;
   }
+
   /*撑开 内容防止 内容区域高度不够 页面滚到顶*/
   .full-screen {
     height: 100vh;
   }
+
   .switch {
     display: flex;
     justify-content: space-around;
     background-color: #f7f8fa;
+
     text {
       display: block;
       font-size: 13px;
@@ -136,13 +144,16 @@
       text-align: center;
     }
   }
+
   .current {
     color: #409eff;
     border-bottom: 2px solid #409eff;
   }
+
   .current::after {
     height: 2px;
   }
+
   .tabs-fixed {
     position: fixed;
     top: 0;
@@ -150,22 +161,29 @@
     z-index: 999;
     background-color: #f7f8fa;
   }
+
   .empty-text {
     width: 100%;
     display: flex;
     justify-content: center;
   }
+
   .result-popup {
     height: calc(100% - 98rpx);
   }
+
   .result-wapper {
     margin-top: 20px;
   }
 }
 </style>
+
 <script>
 import wepy from '@wepy/core';
 import Toast from '@/components/vant/toast/toast';
+import store from 'store/index.js';
+import { login } from 'network/user';
+import { getAllCats, searchByName } from 'network/cat';
 wepy.page({
   data: {
     key: '',
@@ -193,193 +211,47 @@ wepy.page({
     ],
     isshowResult: false,
     results: [], //搜索结果
-    backTopVisible:false
+    backTopVisible: false,
   },
-
   methods: {
-    getData() {
-      const data = [
-        {
-          catID: 0,
-          name: '大狐狸',
-          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-          sex: '雄性',
-          color: '黑白相间',
-          state: 0,
-          sterilized: false, //绝育情况
-          birthday: '2018.08.22',
-          location: '竹轩',
-          changeTime: '2019.08.22', //状改变的时间，
-          witnessTime: '2018.08.28', //第一次目击时间
-          appearance: '黑白相间',
-          character: '大方，不怕生', //个性特征
-        },
-        {
-          catID: 1,
-          name: '大狐狸',
-          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-          sex: '雄性',
-          color: '黑白相间',
-          location: '竹轩',
-          state: 0,
-          sterilized: false, //绝育情况
-          birthday: '2018.08.22',
-          changeTime: '2019.08.22', //状改变的时间，
-          witnessTime: '2018.08.28', //第一次目击时间
-          appearance: '黑白相间',
-          character: '大方，不怕生', //个性特征
-        },
-        {
-          catID: 2,
-          name: '大狐狸',
-          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-          sex: '雄性',
-          color: '黑白相间',
-          location: '竹轩',
-          state: 0,
-          sterilized: false, //绝育情况
-          birthday: '2018.08.22',
-          changeTime: '2019.08.22', //状改变的时间，
-          witnessTime: '2018.08.28', //第一次目击时间
-          appearance: '黑白相间',
-          character: '大方，不怕生', //个性特征
-        },
-        {
-          catID: 3,
-          name: '大狐狸',
-          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-          sex: '雄性',
-          color: '黑白相间',
-          location: '竹轩',
-          state: 0,
-          sterilized: false, //绝育情况
-          birthday: '2018.08.22',
-          changeTime: '2019.08.22', //状改变的时间，
-          witnessTime: '2018.08.28', //第一次目击时间
-          appearance: '黑白相间',
-          character: '大方，不怕生', //个性特征
-        },
-        {
-          catID: 4,
-          name: '大狐狸',
-          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-          sex: '雄性',
-          color: '黑白相间',
-          location: '竹轩',
-          state: 0,
-          sterilized: false, //绝育情况
-          birthday: '2018.08.22',
-          changeTime: '2019.08.22', //状改变的时间，
-          witnessTime: '2018.08.28', //第一次目击时间
-          appearance: '黑白相间',
-          character: '大方，不怕生', //个性特征
-        },
-      ];
-      const data1 = [
-        {
-          catID: 5,
-          name: '666',
-          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-          sex: '雄性',
-          color: '黑白相间',
-          state: 0,
-          sterilized: false, //绝育情况
-          birthday: '2018.08.22',
-          location: '竹轩',
-          changeTime: '2019.08.22', //状改变的时间，
-          witnessTime: '2018.08.28', //第一次目击时间
-          appearance: '黑白相间',
-          character: '大方，不怕生', //个性特征
-        },
-        {
-          catID: 6,
-          name: '777',
-          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-          sex: '雄性',
-          color: '黑白相间',
-          location: '竹轩',
-          state: 0,
-          sterilized: false, //绝育情况
-          birthday: '2018.08.22',
-          changeTime: '2019.08.22', //状改变的时间，
-          witnessTime: '2018.08.28', //第一次目击时间
-          appearance: '黑白相间',
-          character: '大方，不怕生', //个性特征
-        },
-        {
-          catID: 7,
-          name: '666',
-          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-          sex: '雄性',
-          color: '黑白相间',
-          location: '竹轩',
-          state: 0,
-          sterilized: false, //绝育情况
-          birthday: '2018.08.22',
-          changeTime: '2019.08.22', //状改变的时间，
-          witnessTime: '2018.08.28', //第一次目击时间
-          appearance: '黑白相间',
-          character: '大方，不怕生', //个性特征
-        },
-        {
-          catID: 8,
-          name: '888',
-          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-          sex: '雄性',
-          color: '黑白相间',
-          location: '竹轩',
-          state: 0,
-          sterilized: false, //绝育情况
-          birthday: '2018.08.22',
-          changeTime: '2019.08.22', //状改变的时间，
-          witnessTime: '2018.08.28', //第一次目击时间
-          appearance: '黑白相间',
-          character: '大方，不怕生', //个性特征
-        },
-        {
-          catID: 9,
-          name: '666',
-          img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-          sex: '雄性',
-          color: '黑白相间',
-          location: '竹轩',
-          state: 0,
-          sterilized: false, //绝育情况
-          birthday: '2018.08.22',
-          changeTime: '2019.08.22', //状改变的时间，
-          witnessTime: '2018.08.28', //第一次目击时间
-          appearance: '黑白相间',
-          character: '大方，不怕生', //个性特征
-        },
-      ];
-      this.catlists.study = [...data, ...data];
-      this.catlists.graduate = [...data1, ...data1, ...data1];
-      this.showList = this.catlists.study;
-      this.catlists.all = [
-        ...this.catlists.study,
-        ...this.catlists.graduate,
-        ...this.catlists.suspend,
-      ];
+    async getData() {
+      const { data } = await getAllCats();
+
+      this.showList = this.catlists.study = data.filter(
+        (item) => item.state === 0
+      );
+      this.catlists.graduate = data.filter((item) => item.state === 1);
+      this.catlists.suspend = data.filter((item) => item.state === 2);
+      this.catlists.all = data;
     },
     //手动进行数据的双向绑定
     keyChange({ $wx: { detail } }) {
       this.key = detail;
     },
     //进行搜索
-    searchClick() {
+    async searchClick() {
       if (this.key) {
-        this.results = this.catlists.all.filter((item) =>
-          item.name.includes(this.key)
-        );
-
-        this.showResults();
+        const res = await searchByName(this.key);
+        if (res.data) {
+          this.results = res.data;
+          this.showResults();
+          if (res.data.length === 0) {
+            wx.showToast({
+              title: '搜索结果为空，尝试更换关键词',
+              icon: 'none',
+            });
+          } else wx.showToast({ title: '搜索成功', icon: 'none' });
+        }
       } else Toast.fail('关键字为空');
     },
     showResults() {
       this.isshowResult = true;
     },
+    //关闭结果展示 弹窗
     popupCloseHandler() {
       this.isshowResult = false;
+      this.key = '';
+      this.reaults = [];
     },
     //选择 图片
     imgChooseClick() {
@@ -399,7 +271,7 @@ wepy.page({
           // tempFilePath可以作为img标签的src属性显示图片
           const tempFilePaths = res.tempFilePaths;
           console.log(tempFilePaths);
-          Toast.fail('图片选择成功');
+          Toast.success('图片选择成功');
         },
         fail(err) {
           console.log(err);
@@ -421,6 +293,29 @@ wepy.page({
     wx.showNavigationBarLoading();
     this.getData();
     wx.hideNavigationBarLoading();
+  },
+  onShow() {
+    const nickName = wx.getStorageSync('nickName');
+    if (nickName) {
+      store.infoRefresh();
+    }
+  },
+  onHide() {
+    if (Object.keys(store.userinfo).length === 0) {
+      wx.showModal({
+        title: '提示',
+        content: '请先登录',
+        success(res) {
+          if (res.confirm) {
+            wx.switchTab({
+              url: '/pages/profile',
+            });
+          } else if (res.cancel) {
+            console.log('用户点击取消');
+          }
+        },
+      });
+    }
   },
   //绑定节流函数，减少性能消耗 ,使用普通函数，保存this
   onPageScroll({ scrollTop }) {
@@ -445,7 +340,6 @@ wepy.page({
     "van-tag":'../components/vant/tag',
     "van-action-sheet":'../components/vant/action-sheet',
      "van-popup":'../components/vant/popup',
-
     "cat-item": '../components/com/cat_item',
     'back-top':'../components/com/back_top/back_top',
     }

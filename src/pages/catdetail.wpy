@@ -1,79 +1,152 @@
 <template>
   <view class="cat-detail">
     <!-- <image :src="baseInfo.img"></image> -->
-    <van-image fit="widthFix" width="100vw" :src="baseInfo.img" use-error-slot>
+    <van-image
+      fit="widthFix"
+      width="100vw"
+      :src="avatar"
+      use-error-slot
+    >
       <text slot="error">加载失败</text>
     </van-image>
     <view class="baseInfo">
       <text>基础信息 :</text>
       <van-row>
-        <van-col span="12" offset="1"
-          ><van-tag plain type="primary" size="medium">名字 :</van-tag
-          ><text> {{ baseInfo.name }}</text></van-col
+        <van-col
+          span="12"
+          offset="1"
         >
-        <van-col span="11"
-          ><van-tag plain type="primary" size="medium">性别 :</van-tag
-          ><text> {{ baseInfo.sex }}</text></van-col
-        >
-      </van-row>
-      <van-row>
-        <van-col span="12" offset="1"
-          ><van-tag plain type="primary" size="medium">毛色 :</van-tag
-          ><text> {{ baseInfo.color }}</text></van-col
-        >
-        <van-col span="11"
-          ><van-tag plain type="primary" size="medium">绝育情况 :</van-tag
-          ><text> {{ sterilized }}</text></van-col
-        >
-      </van-row>
-      <van-row>
-        <van-col span="12" offset="1"
-          ><van-tag plain type="primary" size="medium">状态 :</van-tag
-          ><text> {{ stateText }}</text></van-col
-        >
-        <van-col span="11"
-          ><van-tag plain type="primary" size="medium">出生时间 :</van-tag
-          ><text> {{ baseInfo.birthday }}</text></van-col
-        >
-      </van-row>
-      <van-row>
-        <van-col span="12" offset="1"
-          ><van-tag plain type="primary" size="medium">目击时间 :</van-tag
-          ><text> {{ baseInfo.witnessTime }}</text></van-col
-        >
-        <van-col span="11"
-          ><van-tag plain type="primary" size="medium">变更时间 :</van-tag
-          ><text> {{ baseInfo.changeTime }}</text></van-col
-        >
-      </van-row>
-      <van-row>
-        <van-col span="4" offset="1"
-          ><van-tag plain type="primary" size="medium">学校 :</van-tag></van-col
-        >
-        <van-col col="18">
-          <text> {{ baseInfo.campus }}</text>
-          <van-icon name="location" class="location-btn"></van-icon>
+          <van-tag
+            plain
+            type="primary"
+            size="medium"
+          >名字 :</van-tag><text> {{ baseInfo.name }}</text>
+        </van-col>
+        <van-col span="11">
+          <van-tag
+            plain
+            type="primary"
+            size="medium"
+          >性别 :</van-tag><text> {{ sexText}}</text>
         </van-col>
       </van-row>
       <van-row>
-        <van-col span="23" offset="1"
-          ><van-tag plain type="primary" size="medium">外貌特征 :</van-tag
-          ><text> {{ baseInfo.appearance }}</text></van-col
+        <van-col
+          span="12"
+          offset="1"
         >
+          <van-tag
+            plain
+            type="primary"
+            size="medium"
+          >毛色 :</van-tag><text> {{ baseInfo.color||'未知' }}</text>
+        </van-col>
+        <van-col span="11">
+          <van-tag
+            plain
+            type="primary"
+            size="medium"
+          >绝育情况 :</van-tag><text> {{ sterilized||'未知' }}</text>
+        </van-col>
       </van-row>
       <van-row>
-        <van-col span="23" offset="1"
-          ><van-tag plain type="primary" size="medium">性格特征 :</van-tag
-          ><text> {{ baseInfo.character }}</text></van-col
+        <van-col
+          span="12"
+          offset="1"
         >
+          <van-tag
+            plain
+            type="primary"
+            size="medium"
+          >状态 :</van-tag><text> {{ stateText||'未知' }}</text>
+        </van-col>
+        <van-col span="11">
+          <van-tag
+            plain
+            type="primary"
+            size="medium"
+          >出生时间 :</van-tag><text> {{ baseInfo.birthday||'未知' }}</text>
+        </van-col>
       </van-row>
       <van-row>
-        <van-col span="4" offset="1"
-          ><van-tag plain type="primary" size="medium">位置 :</van-tag></van-col
+        <van-col
+          span="12"
+          offset="1"
         >
+          <van-tag
+            plain
+            type="primary"
+            size="medium"
+          >目击时间 :</van-tag><text> {{ baseInfo.witnessTime||'未知' }}</text>
+        </van-col>
+        <van-col span="11">
+          <van-tag
+            plain
+            type="primary"
+            size="medium"
+          >变更时间 :</van-tag><text> {{ baseInfo.changeTime||'未知' }}</text>
+        </van-col>
+      </van-row>
+      <van-row>
+        <van-col
+          span="4"
+          offset="1"
+        >
+          <van-tag
+            plain
+            type="primary"
+            size="medium"
+          >学校 :</van-tag>
+        </van-col>
         <van-col col="18">
-          <text> {{ baseInfo.location }}</text>
-          <van-icon name="location" class="location-btn"></van-icon>
+          <text> {{ baseInfo.campus||'未知' }}</text>
+          <van-icon
+            name="location"
+            class="location-btn"
+          ></van-icon>
+        </van-col>
+      </van-row>
+      <van-row>
+        <van-col
+          span="23"
+          offset="1"
+        >
+          <van-tag
+            plain
+            type="primary"
+            size="medium"
+          >外貌特征 :</van-tag><text> {{ baseInfo.appearance||'未知' }}</text>
+        </van-col>
+      </van-row>
+      <van-row>
+        <van-col
+          span="23"
+          offset="1"
+        >
+          <van-tag
+            plain
+            type="primary"
+            size="medium"
+          >性格特征 :</van-tag><text> {{ baseInfo.character||'未知' }}</text>
+        </van-col>
+      </van-row>
+      <van-row>
+        <van-col
+          span="4"
+          offset="1"
+        >
+          <van-tag
+            plain
+            type="primary"
+            size="medium"
+          >位置 :</van-tag>
+        </van-col>
+        <van-col col="18">
+          <text> {{ baseInfo.location||'未知' }}</text>
+          <van-icon
+            name="location"
+            class="location-btn"
+          ></van-icon>
         </van-col>
       </van-row>
     </view>
@@ -92,16 +165,27 @@
       </van-image>
     </view>
     <view class="box">
-      <view class="icon" @tap="tweetClick">
-        <van-icon name="edit" size="60rpx" />
+      <view
+        class="icon"
+        @tap="tweetClick"
+      >
+        <van-icon
+          name="edit"
+          size="60rpx"
+        />
         <text>分享动态</text>
       </view>
-      <view class="icon" @tap="collectClick">
-        <van-icon :name="isCollected ? 'star' : 'star-o'" size="60rpx" />
+      <view
+        class="icon"
+        @tap="collectClick"
+      >
+        <van-icon
+          :name="isCollected ? 'star' : 'star-o'"
+          size="60rpx"
+        />
         <text>收藏</text>
       </view>
     </view>
-    <van-toast id="van-toast" />
     <back-top
       v-if="backTopVisible"
       @hide="backTopVisible = false"
@@ -109,6 +193,7 @@
     ></back-top>
   </view>
 </template>
+
 <style lang="less">
 .cat-detail {
   display: flex;
@@ -118,23 +203,29 @@
   image {
     width: 100vw;
   }
+
   .baseInfo {
     margin-top: 20rpx;
 
     .van-row {
       margin-top: 20rpx;
     }
+
     .location-btn {
       margin-left: 20rpx;
     }
   }
+
   .imgs {
     margin-top: 20rpx;
+
     view {
       margin-bottom: 20rpx;
     }
+
     margin-bottom: 90rpx;
   }
+
   .box {
     position: fixed;
     bottom: 0;
@@ -143,6 +234,7 @@
     width: 100vw;
     display: flex;
     justify-content: space-around;
+
     .icon {
       display: flex;
       flex-direction: column;
@@ -152,53 +244,20 @@
   }
 }
 </style>
+
 <script>
 import wepy from '@wepy/core';
-import Toast from '@/components/vant/toast/toast';
+import { getById } from 'network/cat';
+import { collectCat, cancelCollectCat } from 'network/user';
+import { getStaticUrl } from 'common/utils';
+import store from 'store';
 wepy.page({
   data: {
     baseInfo: {},
     id: 0,
-    imgs: [
-      'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-      'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-      'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-      'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-    ],
+
     isCollected: false, //是否已经收藏，
     backTopVisible: false,
-  },
-  methods: {
-    getData() {
-      this.baseInfo = {
-        catID: 0,
-        name: '大狐狸',
-        campus: 'cqut',
-        img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-        sex: '雄性',
-        color: '黑白相间',
-        state: 0,
-        sterilized: false, //绝育情况
-        birthday: '2018.08.22',
-        location: '竹轩',
-        changeTime: '2019.08.22', //状改变的时间，
-        witnessTime: '2018.08.28', //第一次目击时间
-        appearance: '黑白相间',
-        character: '大方，不怕生', //个性特征
-      };
-    },
-    tweetClick() {
-      this.$navigate('/pages/createtweet_page?topic='+this.baseInfo.name);
-    },
-    //点击收藏
-    collectClick() {
-      if (this.isCollected) {
-        Toast('收藏夹中已存在');
-      } else {
-        Toast.success('收藏成功');
-        this.isCollected = true;
-      }
-    },
   },
   computed: {
     stateText() {
@@ -208,11 +267,78 @@ wepy.page({
     sterilized() {
       return this.baseInfo.sterilized ? '已' : '未' + '绝育';
     },
+    sexText() {
+      const obj = {
+        '-1': '未知',
+        0: '雄性',
+        1: '磁性',
+      };
+      return obj[this.baseInfo.sex];
+    },
+    avatar() {
+      if (this.baseInfo.imgs) return getStaticUrl('cat', this.baseInfo.imgs[0]);
+      else return '';
+    },
+    imgs() {
+      if (this.baseInfo.imgs)
+        return this.baseInfo.imgs.map((img) => getStaticUrl('cat', img));
+      else return [];
+    },
   },
+  methods: {
+    async getData() {
+      //获取 猫猫信息
+      const res = await getById(this.id);
+      console.log(res);
+      if (!res.data) {
+        console.log(res.msg);
+      }
+      this.baseInfo = res.data;
+      //判断当前猫猫是否收藏
+      console.log(store.userinfo);
+      const index = store.userinfo.cats_co.find((item) => item === this.id);
+      if (index) this.isCollected = true;
+    },
+    //已当前猫猫为话题 创建 动态
+    tweetClick() {
+      this.$navigate('/pages/createtweet_page?topic=' + this.baseInfo.name);
+    },
+    //点击收藏
+    async collectClick() {
+      if (this.isCollected) {
+        const self = this;
+        wx.showModal({
+          title: '提示',
+          content: '已经收藏了该猫猫，是否取消收藏',
+          async success(res) {
+            if (res.confirm) {
+              const res = await cancelCollectCat(self.id);
+              if (res.data) self.isCollected = false;
+              else
+                wx.showToast({
+                  title: '操作失败',
+                });
+            }
+          },
+        });
+      } else {
+        const res = await collectCat(this.id);
+        if (!res.data)
+          return wx.showToast({
+            title: '操作失败',
+          });
+        wx.showToast({
+          title: '收藏成功',
+        });
+        this.isCollected = true;
+      }
+    },
+  },
+
   onLoad(query) {
-    console.log(query);
     this.id = query.id;
     this.getData();
+    store.infoRefresh();
   },
   //引入节流 函数，减少触发次数
   onPageScroll({ scrollTop }) {
@@ -232,9 +358,8 @@ wepy.page({
     'van-col':'../components/vant/col',
     'van-tag':'../components/vant/tag',
     'van-icon':'../components/vant/icon',
-    "van-toast": '../components/vant/toast',
     "van-image": '../components/vant/image',
      'back-top':'../components/com/back_top/back_top',
-     
+
   }
 }</config>

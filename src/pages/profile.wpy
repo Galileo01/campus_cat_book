@@ -1,19 +1,58 @@
 <template>
   <view class="profile container">
+    <view
+      class="login"
+      v-if="!isLogined"
+    >
+      <van-button
+        type="info"
+        size="normal"
+        color="#409eff"
+        round
+        open-type="getUserInfo"
+        bindgetuserinfo="_login"
+      >登录</van-button>
+      <text class="info">登录体验完整功能</text>
+    </view>
     <user-baseinfo
       :userinfo="userinfo"
       mode="my"
       @avatarTap="showEnlarge"
       @edit="editInfo"
+      v-else
     ></user-baseinfo>
     <view class="oprations">
       <van-cell-group>
-        <van-cell title="我的动态" is-link @tap="seeMoreData('tweet_m')" />
-        <van-cell title="猫猫收藏" is-link @tap="seeMoreData('cats')" />
-        <van-cell title="动态收藏" is-link @tap="seeMoreData('tweet_c')" />
-        <van-cell title="权限申请" is-link @tap="$navigate('/pages/right_apply')"/>
-        <van-cell title="问题反馈" is-link @tap="$navigate('/pages/feedback')"/>
-        <van-cell title="关于" is-link  @tap="$navigate('/pages/about')"/>
+        <van-cell
+          title="我的动态"
+          is-link
+          @tap="seeMoreData('tweet_m')"
+        />
+        <van-cell
+          title="猫猫收藏"
+          is-link
+          @tap="seeMoreData('cats')"
+        />
+        <van-cell
+          title="动态收藏"
+          is-link
+          @tap="seeMoreData('tweet_c')"
+        />
+        <van-cell
+          title="权限申请"
+          is-link
+          @tap="navgateTo('/pages/right_apply')"
+        />
+        <van-cell
+          title="问题反馈"
+          is-link
+          @tap="navgateTo('/pages/feedback')"
+        />
+        <van-cell
+          title="关于"
+          is-link
+          @tap="$navigate('/pages/about')"
+        />
       </van-cell-group>
     </view>
     <!--头像放大-->
@@ -31,19 +70,20 @@
             size="small"
             @tap="uploadTap"
             v-if="currentMode === 'show'"
-            >上传</van-button
-          >
-          <van-button type="info" size="small" @tap="uploadImg" v-else
-            >确认上传</van-button
-          >
+          >上传</van-button>
+          <van-button
+            type="info"
+            size="small"
+            @tap="uploadImg"
+            v-else
+          >确认上传</van-button>
           <van-button
             type="default"
             size="small"
             @tap="downloadImg"
             :disabled="!imgSrc"
             v-if="currentMode === 'show'"
-            >下载</van-button
-          >
+          >下载</van-button>
         </view>
       </view>
     </van-popup>
@@ -81,7 +121,10 @@
           clearable
           @change="inputChange($event, 'signature')"
         />
-        <van-cell title="性别" class="sex">
+        <van-cell
+          title="性别"
+          class="sex"
+        >
           <van-radio-group
             :value="formData.sex"
             @change="inputChange($event, 'sex')"
@@ -92,49 +135,76 @@
         </van-cell>
       </van-cell-group>
       <view class="btns">
-        <van-button type="danger" size="small" color="#E6A23C" @tap="closeEdit"
-          >取消</van-button
-        >
-        <van-button type="info" size="small" color="#409eff" @tap="submit"
-          >提交</van-button
-        >
+        <van-button
+          type="danger"
+          size="small"
+          color="#E6A23C"
+          @tap="closeEdit"
+        >取消</van-button>
+        <van-button
+          type="info"
+          size="small"
+          color="#409eff"
+          @tap="submit"
+        >提交</van-button>
       </view>
     </van-popup>
-    <van-toast id="van-toast" />
   </view>
 </template>
+
 <style lang="less">
 .profile {
+  .login {
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40rpx;
+
+    .info {
+      color: #409eff;
+      text-align: center;
+      margin-top: 20rpx;
+    }
+  }
+
   .enlarge_img {
     .preview {
-      background-color: rgba(0, 0, 0, 0.7); /*和遮罩层 颜色一致 */
+      background-color: rgba(0, 0, 0, 0.7);
+      /*和遮罩层 颜色一致 */
       position: relative;
     }
+
     .btns {
       width: 100%;
       display: flex;
       justify-content: space-between;
     }
   }
+
   .info_edit {
     input,
     textarea {
       width: 70% !important;
     }
+
     .sex {
       .van-cell__title {
         -webkit-flex: none;
         flex: none;
       }
+
       van-radio-group {
         display: flex;
         padding: 10rpx 20rpx;
         margin-left: 90rpx;
+
         .van-radio {
           width: 30vw;
         }
       }
     }
+
     .btns {
       position: fixed;
       bottom: 40rpx;
@@ -148,32 +218,29 @@
   }
 }
 </style>
+
 <script>
 import wepy from '@wepy/core';
-import Toast from 'components/vant/toast/toast';
+import store from 'store/index.js';
+import { login } from 'network/user';
 wepy.page({
   data: {
-    userinfo: {},
+    userinfo: store.userinfo,
     enlargeVisible: false,
     imgSrc: '',
     currentMode: 'show', //当前 头像放大框的模式
     editPopupVisible: false,
     formData: {},
   },
-  methods: {
-    getData() {
-      const userinfo = {
-        name: '用户1',
-        id: 1,
-        signature: '个性签名', //个性签名
-        userbgc: 'https://ftp.bmp.ovh/imgs/2020/07/fabb688fb0d11562.jpg', //主页背景图片
-        avatar: 'https://ftp.bmp.ovh/imgs/2020/03/91f2a75bc35728a7.jpg',
-        campus: 'cqut',
-        sex: 'female',
-      };
-      this.userinfo = { ...userinfo }; //保证两个变量不会指向一个引用
-      this.formData = { ...userinfo };
+  computed: {
+    store() {
+      return store;
     },
+    isLogined() {
+      return Object.keys(this.userinfo).length !== 0;
+    },
+  },
+  methods: {
     showEnlarge(src) {
       this.enlargeVisible = true;
       this.imgSrc = src;
@@ -198,14 +265,12 @@ wepy.page({
       });
     },
     uploadImg() {
-      Toast.loading({
-        mask: true,
-        duration: 0, //一致显示toast
-        message: '上传中...',
+      wx.showLoading({
+        title: '上传中',
       });
       //请求成功 后关闭，模拟
       const timer = setTimeout(() => {
-        Toast.clear();
+        wx.hideLoading();
         clearTimeout(timer);
         this.userinfo.avatar = this.imgSrc;
         this.closeEnlarge();
@@ -236,14 +301,12 @@ wepy.page({
       this.formData[key] = detail;
     },
     submit() {
-      Toast.loading({
-        mask: true,
-        duration: 0, //一致显示toast
-        message: '提交中...',
+      wx.showLoading({
+        title: '提交中',
       });
       //请求成功 后关闭，模拟
       const timer = setTimeout(() => {
-        Toast.clear();
+        wx.hideLoading();
         clearTimeout(timer);
         this.getData(); //刷新数据
         this.closeEdit();
@@ -254,14 +317,56 @@ wepy.page({
       this.formData = this.userinfo;
     },
     seeMoreData(tab) {
+      if (!this.isLogined)
+        return wx.showToast({
+          title: '请先登录',
+          icon: 'none',
+        });
       this.$navigate('/pages/user_more_data?tab=' + tab);
     },
+    //导航到其他页面
+    navgateTo(path) {
+      if (!this.isLogined)
+        return wx.showToast({
+          title: '请先登录',
+          icon: 'none',
+        });
+      this.$navigate(path);
+    },
+    // 第一次 使用 手动进行登录
+    async _login({
+      $wx: {
+        detail: { userInfo },
+      },
+    }) {
+      if (userInfo) {
+        const res = await login(userInfo);
+        store.userinfo = res.data;
+        console.log(res.data);
+        this.userinfo = {
+          ...res.data,
+        }; //保证两个变量不会指向一个引用
+        this.formData = {
+          ...res.data,
+        };
+        wx.setStorage({
+          key: 'nickName',
+          data: res.data.name,
+        });
+      }
+    },
   },
-  onLoad() {
-     wx.showNavigationBarLoading();
-    this.getData();
-    wx.hideNavigationBarLoading();
+  async onLoad() {
+    if (wx.getStorageSync('isLogined')) {
+      this.userinfo = {
+        ...store.userinfo,
+      }; //保证两个变量不会指向一个引用
+      this.formData = {
+        ...store.userinfo,
+      };
+    }
   },
+  onHide() {},
 });
 </script>
 
@@ -275,7 +380,6 @@ wepy.page({
       "van-popup":'../components/vant/popup',
       "van-icon":'../components/vant/icon',
       "van-button":'../components/vant/button',
-      "van-toast":'../components/vant/toast',
       'van-radio':'../components/vant/radio',
       'van-radio-group':'../components/vant/radio-group',
       'van-field':'../components/vant/field',
