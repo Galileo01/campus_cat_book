@@ -1,5 +1,10 @@
 # 校园猫猫图鉴 
-参考北大猫咪图鉴小程序
+参考北大猫咪图鉴小程序 
+技术栈：
+
+前端：wepy框架+vant 组件库 [github仓库](https://github.com/Galileo01/campus_cat_book)
+
+后端：node/express ，mongodb  [github仓库](https://github.com/Galileo01/campus_cat_book_backend)
 ### 安装方法
 git clone 
 cnpm install /推荐使用cnpm  

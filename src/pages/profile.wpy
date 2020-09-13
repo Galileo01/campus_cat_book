@@ -364,6 +364,10 @@ wepy.page({
           key: 'nickName',
           data: res.data.name,
         });
+        wx.setStorage({
+          key: 'isLogined',
+          data: true,
+        });
       }
     },
   },

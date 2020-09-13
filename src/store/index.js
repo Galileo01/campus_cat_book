@@ -22,6 +22,10 @@ const store = {
     else data.avatar = getStaticUrl('user', data.avatar);
     this.userinfo = data;
     console.log(data);
+    wx.setStorage({
+      key: 'isLogined',
+      data: true,
+    });
     return Promise.resolve(this.userinfo)
   }
 }
