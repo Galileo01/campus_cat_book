@@ -231,7 +231,9 @@ wepy.page({
     //进行搜索
     async searchClick() {
       if (this.key) {
+        wx.showNavigationBarLoading();
         const res = await searchByName(this.key);
+        wx.hideNavigationBarLoading();
         if (res.data) {
           this.results = res.data;
           this.showResults();
@@ -290,9 +292,7 @@ wepy.page({
   },
 
   onLoad() {
-    wx.showNavigationBarLoading();
     this.getData();
-    wx.hideNavigationBarLoading();
   },
   onShow() {
     const nickName = wx.getStorageSync('nickName');

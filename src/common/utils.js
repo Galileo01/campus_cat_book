@@ -23,7 +23,7 @@ export function getStaticUrl(router, filename) {
         user: '/user/avatar/',
         cat: '/cat/imgs/',
         tweet: '/tweet/media/',
-        bug: '/bug/imgs/'
+        feedback: '/bug/imgs/'
     }
     return baseUrl + '/public' + paths[router] + filename;
 }
@@ -59,4 +59,23 @@ export function formatDate(str, fmt) {
         }
     }
     return fmt;
+}
+
+//自封装 的文件上传器
+export function uploader({ url, filePath, name, formData }) {
+    return new Promise((resolve, reject) => {
+        //封装 异步操作
+        wx.uploadFile({
+            url,
+            filePath,
+            name,
+            formData,
+            success({ data }) {
+                return resolve(data)
+            },
+            fail(err) {
+                return reject(err)
+            }
+        });
+    })
 }

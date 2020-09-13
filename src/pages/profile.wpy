@@ -113,7 +113,7 @@
           @change="inputChange($event, 'campus')"
         />
         <van-field
-          :value="signature"
+          :value="formData.signature"
           label="个性签名"
           type="textarea"
           placeholder="请输入个性签名"
@@ -129,8 +129,8 @@
             :value="formData.sex"
             @change="inputChange($event, 'sex')"
           >
-            <van-radio name="female">男</van-radio>
-            <van-radio name="male">女</van-radio>
+            <van-radio name="1">男</van-radio>
+            <van-radio name="2">女</van-radio>
           </van-radio-group>
         </van-cell>
       </van-cell-group>
@@ -222,7 +222,8 @@
 <script>
 import wepy from '@wepy/core';
 import store from 'store/index.js';
-import { login } from 'network/user';
+import { login, updateInfo, updateAvatar } from 'network/user';
+import { getStaticUrl } from 'common/utils';
 wepy.page({
   data: {
     userinfo: store.userinfo,
@@ -231,6 +232,7 @@ wepy.page({
     currentMode: 'show', //当前 头像放大框的模式
     editPopupVisible: false,
     formData: {},
+    preName: '', //之前 的昵称
   },
   computed: {
     store() {
@@ -257,24 +259,23 @@ wepy.page({
         sizeType: ['compressed'],
         sourceType: ['album', 'camera'],
         success: function (res) {
-          const tempFilePaths = res.tempFilePaths;
-          console.log(tempFilePaths);
-          this.imgSrc = tempFilePaths;
+          console.log(res.tempFilePaths);
+          this.imgSrc = res.tempFilePaths[0];
           this.currentMode = 'upload';
         }.bind(this),
       });
     },
-    uploadImg() {
-      wx.showLoading({
-        title: '上传中',
-      });
-      //请求成功 后关闭，模拟
-      const timer = setTimeout(() => {
-        wx.hideLoading();
-        clearTimeout(timer);
-        this.userinfo.avatar = this.imgSrc;
-        this.closeEnlarge();
-      }, 500);
+    //上传 新头像
+    async uploadImg() {
+      const res = await updateAvatar(this.imgSrc);
+      console.log(res);
+      if (res.includes('failed'))
+        return wx.showToast({
+          title: '上传失败，请重试',
+          icon: 'none',
+        });
+      this.userinfo.avatar = getStaticUrl('user', res);
+      this.closeEnlarge(); //关闭 弹框
     },
     //下载到本地
     downloadImg() {
@@ -286,7 +287,6 @@ wepy.page({
             filePath: path,
             success(result) {
               console.log(result);
-              this.$emit('downloadSuccess');
             },
           });
         },
@@ -300,17 +300,27 @@ wepy.page({
       console.log(detail, key);
       this.formData[key] = detail;
     },
-    submit() {
+    //提交新的 用户信息
+    async submit() {
       wx.showLoading({
         title: '提交中',
       });
-      //请求成功 后关闭，模拟
-      const timer = setTimeout(() => {
-        wx.hideLoading();
-        clearTimeout(timer);
-        this.getData(); //刷新数据
-        this.closeEdit();
-      }, 500);
+      const res = await updateInfo({
+        preName: this.preName,
+        ...this.formData,
+      });
+      if (!res.data) {
+        console.log(res.msg);
+        return wx.showToast({
+          title: '提交失败,请重试',
+          icon: 'none',
+        });
+      }
+      wx.hideLoading();
+      store.infoRefresh().then((info) => {
+        this.userinfo = info;
+      }); //刷新 用户数据
+      this.editPopupVisible = false;
     },
     closeEdit() {
       this.editPopupVisible = false;
@@ -333,7 +343,7 @@ wepy.page({
         });
       this.$navigate(path);
     },
-    // 第一次 使用 手动进行登录
+    // 第一次 使用 手动进行登录  触发 button 获取用户信息
     async _login({
       $wx: {
         detail: { userInfo },
@@ -349,6 +359,7 @@ wepy.page({
         this.formData = {
           ...res.data,
         };
+        this.preName = this.userinfo.name;
         wx.setStorage({
           key: 'nickName',
           data: res.data.name,
@@ -365,8 +376,8 @@ wepy.page({
         ...store.userinfo,
       };
     }
+    this.preName = store.userinfo.name;
   },
-  onHide() {},
 });
 </script>
 

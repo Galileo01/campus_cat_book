@@ -1,184 +1,247 @@
 <template>
-<view class="right_apply container">
+  <view class="right_apply container">
     <view class="applies">
-        <view class="apply-item" v-for="item in applies">
-            <text>申请权限：{{ item.right }}</text>
-            <van-tag :type="item.state ? 'primary' : 'danger'">{{
-          item.state ? '已通过' : '未通过'
+      <view
+        class="apply-item"
+        v-for="item in applies"
+      >
+        <text>申请权限：{{ item.right===0?'信息录入':'bug处理' }}</text>
+        <van-tag :type="item.type">{{
+          item.stateText
         }}</van-tag>
-        </view>
+      </view>
     </view>
     <view class="btn">
-        <van-button type="info" icon="edit" size="small" round @tap="inputVisible = true" color="#409EFF"></van-button>
+      <van-button
+        type="info"
+        icon="edit"
+        size="small"
+        round
+        @tap="inputVisible = true"
+        color="#409EFF"
+      ></van-button>
     </view>
 
-    <van-popup :show="inputVisible" position="bottom" custom-style="height: 100%;" closeable @close="closeInput" class="input-popup">
-        <view class="popup-content">
-            <view class="right">
-                <text>要申请的权限:</text>
-                <van-dropdown-menu>
-                    <van-dropdown-item :value="right" :options="options" @change="change($event, 'right')" />
-                </van-dropdown-menu>
-            </view>
-            <view class="email">
-                <text>邮箱:</text>
-                <van-field clearable @input="input" placeholder="请输入邮箱" required placeholder-style="font-size:12px" :value="email">
-                </van-field>
-            </view>
-            <view class="btns">
-                <van-button size="small" type="danger" color="#F56C6C" @tap="closeInput()">取消</van-button>
-                <van-button size="small" type="info" color="#409EFF" @tap="submit">提交</van-button>
-            </view>
+    <van-popup
+      :show="inputVisible"
+      position="bottom"
+      custom-style="height: 100%;"
+      closeable
+      @close="closeInput"
+      class="input-popup"
+    >
+      <view class="popup-content">
+        <view class="right">
+          <text>要申请的权限:</text>
+          <van-dropdown-menu>
+            <van-dropdown-item
+              :value="right"
+              :options="options"
+              @change="change($event, 'right')"
+            />
+          </van-dropdown-menu>
         </view>
+        <view class="email">
+          <text>邮箱:</text>
+          <van-field
+            clearable
+            @input="input"
+            placeholder="请输入邮箱"
+            placeholder-style="font-size:12px"
+            :value="email"
+          >
+          </van-field>
+        </view>
+        <view class="btns">
+          <van-button
+            size="small"
+            type="danger"
+            color="#F56C6C"
+            @tap="closeInput()"
+          >取消</van-button>
+          <van-button
+            size="small"
+            type="info"
+            color="#409EFF"
+            @tap="submit"
+          >提交</van-button>
+        </view>
+      </view>
     </van-popup>
 
-</view>
+  </view>
 </template>
 
 <style lang="less">
 .right_apply {
-    padding: 20rpx;
-    font-size: 14px;
+  padding: 20rpx;
+  font-size: 14px;
 
-    .applies {
-        .apply-item {
-            margin: 0 auto;
-            width: 84%;
-            height: 80rpx;
-            margin-top: 20rpx;
-            padding: 20rpx;
-            -webkit-box-shadow: 0 0 10px #ddd;
-            box-shadow: 0 0 10px #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+  .applies {
+    .apply-item {
+      margin: 0 auto;
+      width: 84%;
+      height: 80rpx;
+      margin-top: 20rpx;
+      padding: 20rpx;
+      -webkit-box-shadow: 0 0 10px #ddd;
+      box-shadow: 0 0 10px #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
-            border-radius: 10rpx;
-        }
+      border-radius: 10rpx;
+    }
+  }
+
+  .btn {
+    position: absolute;
+    bottom: 30rpx;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .input-popup {
+    .popup-content {
+      padding: 20rpx;
     }
 
-    .btn {
-        position: absolute;
-        bottom: 30rpx;
-        left: 50%;
-        transform: translateX(-50%);
+    .right {
+      display: flex;
+      line-height: 100rpx;
+
+      justify-items: center;
+
+      van-dropdown-menu {
+        width: 50%;
+
+        .van-dropdown-item {
+          width: 40%;
+          left: 300rpx;
+          -webkit-box-shadow: 0 0 10px #ddd;
+          box-shadow: 0 0 10px #ddd;
+          // height: auto;
+          height: 200rpx;
+        }
+
+        van-overlay {
+          display: none;
+        }
+      }
     }
 
-    .input-popup {
-        .popup-content {
-            padding: 20rpx;
-        }
-
-        .right {
-            display: flex;
-            line-height: 100rpx;
-
-            justify-items: center;
-
-            van-dropdown-menu {
-                width: 50%;
-
-                .van-dropdown-item {
-                    width: 40%;
-                    left: 300rpx;
-                    -webkit-box-shadow: 0 0 10px #ddd;
-                    box-shadow: 0 0 10px #ddd;
-                    // height: auto;
-                    height: 200rpx;
-                }
-
-                van-overlay {
-                    display: none;
-                }
-            }
-        }
-
-        .btns {
-            position: absolute;
-            bottom: 20rpx;
-            width: 60%;
-            display: flex;
-            justify-content: space-between;
-            left: 50%;
-            transform: translateX(-50%);
-        }
+    .btns {
+      position: absolute;
+      bottom: 20rpx;
+      width: 60%;
+      display: flex;
+      justify-content: space-between;
+      left: 50%;
+      transform: translateX(-50%);
     }
+  }
 }
 </style>
 
 <script>
 import wepy from '@wepy/core';
+import { getMyApplies, create } from 'network/apply';
 wepy.page({
-    data: {
-        applies: [],
-        inputVisible: false,
-        options: [{
-                text: '信息录入',
-                value: 0
-            },
-            {
-                text: '信息录入',
-                value: 1
-            },
-        ],
-        right: 0,
-        email: '',
+  data: {
+    applies: [],
+    inputVisible: false,
+    options: [
+      {
+        text: '信息录入',
+        value: 0,
+      },
+      {
+        text: '信息录入',
+        value: 1,
+      },
+    ],
+    right: 0,
+    email: '',
+  },
+  computed: {},
+  methods: {
+    async getData() {
+      const res = await getMyApplies();
+      console.log(res);
+      if (!res.data) {
+        return wx.showToast({
+          title: '数据为空',
+          icon: 'none',
+        });
+        console.log(res.msg);
+      }
+      const textObj = {
+        '-1': '未处理',
+        '1': '通过',
+        '0': '未通过',
+      };
+      const typeObj = {
+        '-1': 'primary',
+        '0': 'danger',
+        '1': 'success',
+      };
+     
+      this.applies = res.data.map(item=>{
+          return {
+              ...item,
+              type: typeObj[item.state],
+              stateText:textObj[item.state]
+          }
+      })
     },
-    methods: {
-        getData() {
-            this.applies = [{
-                    right: '信息录入',
-                    state: 0,
-                    id: 0,
-                    user: 'user1',
-                },
-                {
-                    right: '信息录入',
-                    state: 1,
-                    id: 0,
-                    user: 'user1',
-                },
-            ];
-        },
-        change({
-            $wx: {
-                detail
-            }
-        }) {
-            this.right = detail;
-            //   console.log(detail);
-        },
-        input({
-            $wx: {
-                detail
-            }
-        }) {
-            this.email = detail;
-            //   console.log(detail);
-        },
-        closeInput() {
-            this.inputVisible = false;
-            this.right = 0;
-            this.email = '';
-        },
-        submit() {
-
-            wx.showLoading({
-                title: '提交中'
-            })
-            //请求成功 后关闭，模拟
-            const timer = setTimeout(() => {
-                wx.hideLoading()
-                clearTimeout(timer);
-                this.closeInput();
-            }, 500);
-        },
+    change({ $wx: { detail } }) {
+      this.right = detail;
+      //   console.log(detail);
     },
-    onLoad() {
-        wx.showNavigationBarLoading();
-        this.getData();
-        wx.hideNavigationBarLoading();
+    input({ $wx: { detail } }) {
+      this.email = detail;
+      //   console.log(detail);
     },
+    closeInput() {
+      this.inputVisible = false;
+      this.right = 0;
+      this.email = '';
+    },
+    //提交 申请
+    async submit() {
+      wx.showLoading({
+        title: '提交中',
+      });
+      const ins = this;
+      const res = await create(this.right);
+      if (!res.data) {
+        wx.hideLoading({
+          complete() {
+            wx.showToast({
+              title: '提交失败',
+              icon: 'none',
+            });
+            ins.inputVisible = false;
+          },
+        });
+      } else {
+        wx.hideLoading({
+          complete() {
+            wx.showToast({
+              title: '提交成功,等待处理',
+              icon: 'none',
+            });
+            ins.inputVisible = false;
+          },
+        });
+      }
+    },
+  },
+  onLoad() {
+    wx.showNavigationBarLoading();
+    this.getData();
+    wx.hideNavigationBarLoading();
+  },
 });
 </script>
 <config>

@@ -172,11 +172,18 @@ wepy.page({
     total: 0, //数据库内所有的 动态条数
   },
   methods: {
-    async getData() {
+    async getData(isRefresh) {
       const {
         data: { list, total },
       } = await getTweets(0, 20); //初始获取 20 条
-      console.log(list);
+      if (isRefresh) {
+        wx.stopPullDownRefresh();
+        wx.showToast({
+          title:'刷新成功',
+          icon:'none'
+        })
+      }
+
       if (list) {
         this.showlist = list;
         this.currentLength = list.length;
@@ -261,12 +268,11 @@ wepy.page({
   },
   onLoad() {
     //显示 加载动画
-    wx.showNavigationBarLoading();
     this.getData();
-    wx.hideNavigationBarLoading();
   },
   onShow() {
     store.infoRefresh();
+    this.getData(); //重新刷新 动态列表
   },
 
   //上拉触底 加载更多
@@ -291,9 +297,7 @@ wepy.page({
   //顶端下拉刷新
   onPullDownRefresh() {
     console.log('下拉刷新');
-    this.getData();
-    wx.stopPullDownRefresh();
-    // console.log(this);
+    this.getData(true);
   },
   //引入节流 函数，减少触发次数
   onPageScroll({ scrollTop }) {

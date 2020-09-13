@@ -12,7 +12,10 @@
       <view class="item">
         <text class="title">图片材料:</text>
         <view class="imgs">
-          <image v-for="item in info.imgs" :src="item"></image>
+          <image
+            v-for="item in imgs"
+            :src="item"
+          ></image>
         </view>
       </view>
       <view class="item connect">
@@ -62,26 +65,29 @@
 </style>
 <script>
 import wepy from '@wepy/core';
+import { getById } from 'network/feedback';
+import { getStaticUrl } from 'common/utils';
 wepy.page({
   data: {
     id: 0,
     info: {},
   },
+  computed: {
+    imgs() {
+      if (!this.info.imgs) return [];
+      else return this.info.imgs.map((item) => getStaticUrl('feedback', item));
+    },
+  },
   methods: {
-    getData() {
-      this.info = {
-        title: '视频无法预览',
-        content: '动态发布页面，视频选择后无法预览',
-        imgs: [
-          'https://wx2.sinaimg.cn/mw690/6cd6d028ly4ggv1ek5z72j20c80c8aas.jpg',
-          'https://wx3.sinaimg.cn/mw690/6b1394a6gy1ggwmxfa7v7j20go09djxt.jpg',
-          'https://wx2.sinaimg.cn/mw690/6cd6d028ly4ggv1ek5z72j20c80c8aas.jpg',
-        ],
-        connect: '14565675645@qq.com', //联系方式
-        time: '2020 0705',
-        state: 0, //当前状态
-        userID: 1,
-      };
+    async getData() {
+      const res = await getById(this.id);
+      if (!res.data)
+        return wx.showToast({
+          title: '数据请求失败，请重试',
+          icon: 'none',
+        });
+
+      this.info = res.data;
     },
   },
   onLoad({ id }) {

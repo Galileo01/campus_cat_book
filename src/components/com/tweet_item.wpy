@@ -51,6 +51,7 @@
       >
         <video
           :src="videoUrl"
+          muted
           show-mute-btn
         ></video>
       </view>

@@ -30,6 +30,7 @@ class http {
                 success: (res => {
                     if (res.statusCode === 200) {
                         //200: 服务端业务处理正常结束
+                     
                         resolve({
                             data: res.data.data,
                             msg: res.data.msg

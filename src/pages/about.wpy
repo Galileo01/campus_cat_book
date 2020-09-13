@@ -1,100 +1,115 @@
 <template>
-<view class="about container">
+  <view class="about container">
     <view class="baseinfo">
-        <image src="../assets/img/icon.png"></image>
-        <view class="texts">
-            <text>校园猫猫图鉴</text>
-            <text>版本：体验版 v 0.6.7</text>
-            <text>
-                一个主要收集、展示、维护校园流浪猫猫信息的小程序
-            </text>
-            <text>作者：ltthz</text>
-            <text>github仓库：https://github.com/Galileo01/campus_cat_book</text>
-        </view>
-        <view class="rate-wapper">
-            <van-rate :value="rate" bind:change="onChange" allow-half color="#409EFF" :size="25" />
-            <van-button type="info" size="small" @tap="summitRate">提交</van-button>
-        </view>
+      <image src="../assets/img/icon.png"></image>
+      <view class="texts">
+        <text>校园猫猫图鉴</text>
+        <text>版本：体验版 v 0.6.7</text>
+        <text>
+          一个主要收集、展示、维护校园流浪猫猫信息的小程序
+        </text>
+        <text>作者：ltthz</text>
+        <text>github仓库：https://github.com/Galileo01/campus_cat_book</text>
+      </view>
+      <view class="rate-wapper">
+        <van-rate
+          :value="rate"
+          bind:change="onChange"
+          allow-half
+          color="#409EFF"
+          :size="25"
+        />
+        <van-button
+          type="info"
+          size="small"
+          @tap="summitRate"
+        >提交</van-button>
+      </view>
     </view>
 
-</view>
+  </view>
 </template>
 
 <style lang="less">
 .about {
-    margin-top: 40rpx;
+  margin-top: 40rpx;
 
-    .flex-col {
-        display: flex;
-        flex-direction: column;
+  .flex-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .baseinfo {
+    justify-content: center;
+    .flex-col();
+    align-items: center;
+
+    image {
+      width: 300rpx;
+      height: 300rpx;
+      border-radius: 50%;
+      -webkit-box-shadow: 0 0 10px #ddd;
+      box-shadow: 0 0 10px #ddd;
+      padding: 10px;
+      border-radius: 50%;
     }
 
-    .baseinfo {
-        justify-content: center;
-        .flex-col();
-        align-items: center;
+    .texts {
+      margin-top: 20rpx;
+      text-align: center;
+      .flex-col();
 
-        image {
-            width: 300rpx;
-            height: 300rpx;
-            border-radius: 50%;
-            -webkit-box-shadow: 0 0 10px #ddd;
-            box-shadow: 0 0 10px #ddd;
-            padding: 10px;
-            border-radius: 50%;
-        }
+      text:first-of-type {
+        font-size: 16px;
+        color: var(--theme);
+      }
 
-        .texts {
-            margin-top: 20rpx;
-            text-align: center;
-            .flex-col();
-
-            text:first-of-type {
-                font-size: 16px;
-                color: var(--theme);
-            }
-
-            text {
-                margin-top: 20rpx;
-            }
-        }
-
-        .rate-wapper {
-            margin-top: 100rpx;
-            .flex-col();
-            align-items: center;
-
-            van-button {
-                margin-top: 40rpx;
-            }
-        }
+      text {
+        margin-top: 20rpx;
+      }
     }
+
+    .rate-wapper {
+      margin-top: 100rpx;
+      .flex-col();
+      align-items: center;
+
+      van-button {
+        margin-top: 40rpx;
+      }
+    }
+  }
 }
 </style>
 
 <script>
 import wepy from '@wepy/core';
+import { grade } from 'network/score';
 
 wepy.page({
-    data: {
-        rate: 0,
+  data: {
+    rate: 0,
+  },
+  methods: {
+    onChange({ $wx: { detail } }) {
+      console.log(detail);
+      this.rate = detail;
     },
-    methods: {
-        onChange({
-            $wx: {
-                detail
-            }
-        }) {
-            console.log(detail);
-            this.rate = detail;
-        },
-        summitRate() {
-            wx.showToast({
-                title: '评分成功',
-                icon: 'none'
-            })
-        }
+
+    async summitRate() {
+      const res = await grade(this.rate);
+      if (!res.data) {
+        return wx.showToast({
+          title: '评分失败',
+        });
+      }
+
+      wx.showToast({
+        title: '评分成功',
+        icon: 'none',
+      });
     },
+  },
 });
 </script>
 

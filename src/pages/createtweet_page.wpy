@@ -1,406 +1,382 @@
 <template>
-<view class="createtweet_page">
+  <view class="createtweet_page">
     <view class="content">
-        <view class="texts">
-            <text class="topic-text" v-if="topicsText" @tap="showTopic">{{
-          topicsText
-        }}</text>
-            <van-field model:value="{{text}}" placeholder="分享新鲜事" placeholder-style=" color: #a497a6;font-size:13px" @input="textInput" :border="false"></van-field>
+      <view class="texts">
 
-            <view class="imgs">
-                <van-image v-for="(item, index) in imgs" :src="item" :key="index" width="30vw" lazy-load fit="widthFix"></van-image>
-            </view>
-            <view class="video">
-                <video src="video" v-if="video" muted autoplay poster="videoPoster"></video>
-            </view>
-            <text class="count">{{ text.length }}/140</text>
+        <view
+          class="topic-text"
+          v-if="topicsFormedText"
+          @tap="showTopic"
+        >
+          <text class="content">{{
+          topicsFormedText
+        }}</text>
+          <text
+            class="edit-btn"
+            @tap="showTopic"
+          >{{topicsText?'编辑':''}}</text>
         </view>
+        <van-field
+          model:value="{{text}}"
+          placeholder="分享新鲜事"
+          placeholder-style=" color: #a497a6;font-size:13px"
+          @input="textInput"
+          :border="false"
+        ></van-field>
+
+        <view class="imgs">
+          <van-image
+            v-for="(item, index) in imgs"
+            :src="item"
+            :key="index"
+            width="30vw"
+            lazy-load
+            fit="widthFix"
+          ></van-image>
+        </view>
+        <view class="video">
+          <video
+            :src="video"
+            v-if="video"
+            autoplay
+            poster="videoPoster"
+            show-mute-btn
+          ></video>
+        </view>
+        <text class="count">{{ text.length }}/140</text>
+      </view>
     </view>
     <view class="btns">
-        <van-icon name="photo-o" size="60rpx" @tap="chooseImg"></van-icon>
-        <van-icon name="passed" size="100rpx" class="passed" color="#fff" @tap="makeATweet"></van-icon>
-        <view class="jinghao" @tap="showTopic">
-            #
-        </view>
-        <van-icon name="video-o" size="60rpx" @tap="chooseVideo"></van-icon>
+      <van-icon
+        name="photo-o"
+        size="60rpx"
+        @tap="chooseImg"
+      ></van-icon>
+      <van-icon
+        name="passed"
+        size="100rpx"
+        class="passed"
+        color="#fff"
+        @tap="makeATweet"
+      ></van-icon>
+      <view
+        class="jinghao"
+        @tap="showTopic"
+      >
+        #
+      </view>
+      <van-icon
+        name="video-o"
+        size="60rpx"
+        @tap="chooseVideo"
+      ></van-icon>
     </view>
     <!--话题选择弹框-->
-    <van-popup :show="isshowTopicChoose" @close="closeTopicChoose" position="bottom" custom-style="height: 100%;" closeable>
-        <view class="topic-choose-wapper">
-            <van-field model:value="{{topicsText}}" placeholder="请输入或选择话题" :border="false" placeholder-style="font-size: 12px; color: #a497a6;" class="input" clearable @clear="topics = []">
-                <view class="jinghao" slot="left-icon">
-                    #
-                </view>
-            </van-field>
-            <view class="options">
-                <view class="title">我的猫猫收藏如下</view>
-                <view class="option" v-for="(item, index) in collectCats" :key="index" @tap="topics.push(item.name)">#{{ item.name }}#</view>
-            </view>
+    <van-popup
+      :show="isshowTopicChoose"
+      @close="closeTopicChoose"
+      position="bottom"
+      custom-style="height: 100%;"
+      closeable
+    >
+      <view class="topic-choose-wapper">
+        <van-field
+          model:value="{{topicsInput}}"
+          placeholder="请输入或选择话题"
+          :border="false"
+          placeholder-style="font-size: 12px; color: #a497a6;"
+          class="input"
+          clearable
+          @clear="topics = []"
+        >
+          <view
+            class="jinghao"
+            slot="left-icon"
+          >
+            #
+          </view>
+        </van-field>
+        <view class="options">
+          <view class="title">我的猫猫收藏如下</view>
+          <view
+            class="option"
+            v-for="(item, index) in collectCats"
+            :key="index"
+            @tap="topics.push(item)"
+          >#{{ item }}#</view>
         </view>
+      </view>
     </van-popup>
     <!--清楚媒体文件提示对话框-->
     <van-dialog id="van-dialog" />
-</view>
+  </view>
 </template>
 
 <style lang="less">
 .createtweet_page {
-    font-size: 13px;
-    background-color: #f7f8fa;
-    height: 100vh;
+  font-size: 13px;
+  background-color: #f7f8fa;
+  height: 100vh;
 
-    .content {
-        background-color: #fff;
+  .content {
+    background-color: #fff;
 
-        .texts {
-            padding: 20rpx;
-            border: 1px solid #409eff;
+    .texts {
+      padding: 20rpx;
+      border: 1px solid #409eff;
 
-            .topic-text {
-                color: #409eff;
-            }
-
-            van-field {
-                max-height: 50%;
-                height: 400rpx;
-                width: 100%;
-                display: block;
-
-                .field-index--van-field {
-                    padding: 0;
-                }
-            }
-
-            .placeholder {
-                color: #a497a6;
-            }
-
-            .count {
-                color: #a497a6;
-                font-size: 12px;
-            }
-
-            .imgs {
-                display: flex;
-                flex-wrap: wrap;
-
-                van-image {
-                    margin: 0 5rpx;
-                }
-            }
+      .topic-text {
+        .content {
+          color: #409eff;
         }
-    }
+        .edit-btn {
+          margin-left: 4rpx;
+        }
+      }
 
-    .btns {
-        position: fixed;
-        bottom: 0;
-        width: 100vw;
-        // height:70rpx;
-        padding: 10rpx 0;
+      van-field {
+        max-height: 50%;
+        height: 400rpx;
+        width: 100%;
+        display: block;
+
+        .field-index--van-field {
+          padding: 0;
+        }
+      }
+
+      .placeholder {
+        color: #a497a6;
+      }
+
+      .count {
+        color: #a497a6;
+        font-size: 12px;
+      }
+
+      .imgs {
         display: flex;
-        justify-content: space-around;
-        align-items: center;
-        background-color: #fff;
+        flex-wrap: wrap;
 
-        .passed {
-            position: absolute;
-            bottom: 120rpx;
-
-            background-color: #409eff;
-            border-radius: 50%;
+        van-image {
+          margin: 0 5rpx;
         }
+      }
+    }
+  }
 
-        .jinghao {
-            font-size: 60rpx;
-            color: #3b3c32;
-        }
+  .btns {
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    // height:70rpx;
+    padding: 10rpx 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #fff;
+
+    .passed {
+      position: absolute;
+      bottom: 120rpx;
+
+      background-color: #409eff;
+      border-radius: 50%;
     }
 
-    .van-popup {
-        .van-popup__close-icon {
-            position: fixed;
-            z-index: 99;
-            /* 防止关闭icon 被popup的内容给遮挡 */
-        }
-
-        .input {
-            position: fixed;
-            z-index: 88;
-            top: 0;
-            width: 90%;
-
-            input {
-                color: #409eff;
-            }
-        }
-
-        .topic-choose-wapper {
-            margin-top: 100rpx;
-            padding: 10rpx;
-
-            .title {
-                font-size: 12px;
-                color: #409eff;
-            }
-
-            .jinghao {
-                margin-right: 10rpx;
-            }
-
-            .option {
-                height: 80rpx;
-                line-height: 80rpx;
-                margin: 5rpx 60rpx;
-                text-align: center;
-                border-bottom: 2rpx solid rgb(217, 217, 217);
-            }
-
-            /*最后一个 没有下边框*/
-            .option:last-of-type {
-                border-bottom: none;
-            }
-        }
+    .jinghao {
+      font-size: 60rpx;
+      color: #3b3c32;
     }
+  }
+
+  .van-popup {
+    .van-popup__close-icon {
+      position: fixed;
+      z-index: 99;
+      /* 防止关闭icon 被popup的内容给遮挡 */
+    }
+
+    .input {
+      position: fixed;
+      z-index: 88;
+      top: 0;
+      width: 90%;
+
+      input {
+        color: #409eff;
+      }
+    }
+
+    .topic-choose-wapper {
+      margin-top: 100rpx;
+      padding: 10rpx;
+
+      .title {
+        font-size: 12px;
+        color: #409eff;
+      }
+
+      .jinghao {
+        margin-right: 10rpx;
+      }
+
+      .option {
+        height: 80rpx;
+        line-height: 80rpx;
+        margin: 5rpx 60rpx;
+        text-align: center;
+        border-bottom: 2rpx solid rgb(217, 217, 217);
+      }
+
+      /*最后一个 没有下边框*/
+      .option:last-of-type {
+        border-bottom: none;
+      }
+    }
+  }
 }
 </style>
 
 <script>
 import wepy from '@wepy/core';
 import Dialog from 'components/vant/dialog/dialog';
+import { getUserTopics } from 'network/user';
+import { create } from 'network/tweet';
 wepy.page({
-    data: {
-        type: 'plain', //新建动态的模式
+  data: {
+    type: 'plain', //新建动态的模式
+    text: '', //文字内容
+    imgs: [], //图片
+    video: '', //
+    videoPoster: '', //视频封面
+    topics: [], //输入的话题
+    topicsInput: '', //用户输入的 自定义话题
+    collectCats: [], //收藏的猫猫 用作 #话题的选择
+    isshowTopicChoose: false, //是否展示 话题输入弹框
+  },
+  computed: {
+    imgLength() {
+      return this.imgs.length;
+    },
+    //添加 # 的格式化 话题
+    topicsFormedText() {
+      return this.topics.map((item) => `#${item}#`).join(' ');
+    },
+  },
+  watch: {
+    topics() {
+      this.topicsInput = this.topics.map((item) => item).join(' ');
+    },
+  },
+  methods: {
+    //获取当前用户的 话题
+    async getTopics() {
+      const res = await getUserTopics();
+      if (res.data) {
+        this.collectCats = res.data;
+      }
+    },
+    onClickLeft() {
+      this.$back();
+    },
+    //多层对象结构
+    //文本内容 输入处理函数
+    textInput({ $wx: { detail } }) {
+      this.text = detail;
+    },
+    //用户输入话题 处理函数
+    topicsInputHandler({ $wx: { detail } }) {
+      this.topicsInput = detail;
+    },
+    chooseImg() {
+      const self = this;
+      wx.chooseImage({
+        sizeType: ['original'],
+        sourceType: ['camera', 'album'],
+        success(res) {
+          const tempFiles = res.tempFilePaths;
+          console.log(res, tempFiles);
+          self.imgs = tempFiles;
+        },
+      });
+    },
+    //选择视频
+    chooseVideo() {
+      const self = this;
+      wx.chooseMedia({
+        count: 1,
+        mediaType: 'video',
+        sourceType: ['album', 'camera'],
+        maxDuration: 30,
+        camera: 'back',
+        success(res) {
+          const { tempFilePath, thumbTempFilePath } = res.tempFiles[0];
+          console.log(tempFilePath, thumbTempFilePath);
+          self.video = tempFilePath;
+          self.videoPoster = thumbTempFilePath;
+        },
+      });
+    },
 
-        text: '', //文字内容
-        imgs: [], //图片
-        video: '', //
-        topics: [], //输入的话题
-        topicsText: '', //话题数组对应的文本
-        videoPoster: '', //视频封面
-        mediaSrcType: 'album', //图片和视频的来源
-        mediaType: 'img', //当前选择的 媒体类型
-        actions: [
-            //菜单选项
-            {
-                name: '本地',
-                id: 0,
-            },
-            {
-                name: '拍摄',
-                id: 1,
-            },
-        ],
-        collectCats: [], //收藏的猫猫 用作 #话题的选择
-        isshowTopicChoose: false, //是否展示 话题输入弹框
+    //展示 猫猫话题
+    showTopic() {
+      this.isshowTopicChoose = true;
     },
-    computed: {
-        imgLength() {
-            return this.imgs.length;
-        },
+    //关闭 话题选择 面板
+    closeTopicChoose() {
+      this.isshowTopicChoose = false;
     },
-    watch: {
-        topics() {
-            this.topicsText = this.topics.map((item) => `#${item}#`).join(' ');
-        },
+    sheetCloseHandler() {
+      this.isshowSrcChoose = false;
     },
-    methods: {
-        onClickLeft() {
+    //发一条动态
+    //由于小程序的 限制 ，一次只允许上传一个文件，所以只能分词传送
+    async makeATweet() {
+      if (!this.text && this.imgs.length === 0 && !this.video) {
+        wx.showToast({
+          title: '至少填写文字/图片/视频中的一项',
+          icon: 'none',
+        });
+      } else {
+        try {
+          let topics = this.topics;
+          if (this.topicInput) topics = this.topicInput.split(' '); //将用户 自己输入的 话题分隔
+          const res = await create({
+            text: this.text,
+            video: this.video,
+            imgs: this.imgs,
+            topics,
+          });
+          console.log(res);
+          if (res.data) {
             this.$back();
-        },
-        //多层对象结构
-        textInput({
-            $wx: {
-                detail
-            }
-        }) {
-            this.text = detail;
-        },
-        chooseImg() {
-            const self = this;
-            console.log(this.mediaSrcType);
-
-            wx.chooseImage({
-                sizeType: ['original'],
-                sourceType: ['camera', 'album'],
-                success(res) {
-                    const tempFiles = res.tempFilePaths;
-                    console.log(res, tempFiles);
-                    self.imgs = tempFiles;
-                },
-            });
-        },
-        chooseVideo() {
-            const self = this;
-            console.log(this.mediaSrcType);
-            wx.chooseVideo({
-                count: 1,
-                mediaType: 'video',
-                sourceType: ['album', 'camera'],
-                maxDuration: 30,
-                camera: 'back',
-                success(res) {
-                    const tempFilePaths = res.tempFilePath;
-                    console.log(res);
-                    self.video = tempFilePaths;
-                },
-            });
-            // wx.chooseMedia({
-            //   count: 1,
-            //   mediaType: 'video',
-            //   sourceType:['album', 'camera'],
-            //   maxDuration: 30,
-            //   camera: 'back',
-            //   success(res) {
-            //     const { tempFilePath, thumbTempFilePath } = res.tempFiles[0];
-            //     console.log(tempFilePath, thumbTempFilePath);
-            //     self.video = tempFilePath;
-            //     self.videoPoster = thumbTempFilePath;
-            //   },
-            // });
-        },
-
-        //展示 猫猫话题
-        showTopic() {
-            //获取 自己收藏的猫猫 展示在此处
-            const data = [{
-                    catID: 0,
-                    name: '大狐狸',
-                    img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-                    sex: '雄性',
-                    color: '黑白相间',
-                    state: 0,
-                    sterilized: false, //绝育情况
-                    birthday: '2018.08.22',
-                    location: '竹轩',
-                    changeTime: '2019.08.22', //状改变的时间，
-                    witnessTime: '2018.08.28', //第一次目击时间
-                    appearance: '黑白相间',
-                    character: '大方，不怕生', //个性特征
-                },
-                {
-                    catID: 1,
-                    name: '666',
-                    img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-                    sex: '雄性',
-                    color: '黑白相间',
-                    location: '竹轩',
-                    state: 0,
-                    sterilized: false, //绝育情况
-                    birthday: '2018.08.22',
-                    changeTime: '2019.08.22', //状改变的时间，
-                    witnessTime: '2018.08.28', //第一次目击时间
-                    appearance: '黑白相间',
-                    character: '大方，不怕生', //个性特征
-                },
-                {
-                    catID: 2,
-                    name: '666',
-                    img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-                    sex: '雄性',
-                    color: '黑白相间',
-                    location: '竹轩',
-                    state: 0,
-                    sterilized: false, //绝育情况
-                    birthday: '2018.08.22',
-                    changeTime: '2019.08.22', //状改变的时间，
-                    witnessTime: '2018.08.28', //第一次目击时间
-                    appearance: '黑白相间',
-                    character: '大方，不怕生', //个性特征
-                },
-                {
-                    catID: 3,
-                    name: '777',
-                    img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-                    sex: '雄性',
-                    color: '黑白相间',
-                    location: '竹轩',
-                    state: 0,
-                    sterilized: false, //绝育情况
-                    birthday: '2018.08.22',
-                    changeTime: '2019.08.22', //状改变的时间，
-                    witnessTime: '2018.08.28', //第一次目击时间
-                    appearance: '黑白相间',
-                    character: '大方，不怕生', //个性特征
-                },
-                {
-                    catID: 4,
-                    name: '000',
-                    img: 'https://ftp.bmp.ovh/imgs/2020/07/501b90694af8f078.jpg',
-                    sex: '雄性',
-                    color: '黑白相间',
-                    location: '竹轩',
-                    state: 0,
-                    sterilized: false, //绝育情况
-                    birthday: '2018.08.22',
-                    changeTime: '2019.08.22', //状改变的时间，
-                    witnessTime: '2018.08.28', //第一次目击时间
-                    appearance: '黑白相间',
-                    character: '大方，不怕生', //个性特征
-                },
-            ];
-            this.collectCats = [...data, ...data, ...data].map((item) => {
-                return {
-                    name: item.name,
-                    id: item.catID
-                };
-            });
-            console.log(this.collectCats);
-            this.isshowTopicChoose = true;
-        },
-        //关闭 话题选择
-        closeTopicChoose() {
-            this.isshowTopicChoose = false;
-        },
-        sheetCloseHandler() {
-            this.isshowSrcChoose = false;
-        },
-        selectHander(e) {
-            const select = e.$wx.detail.id;
-            const types = ['album', 'camera'];
-            this.mediaSrcType = types[select];
-            if (this.mediaType === 'img') {
-                this.chooseImg();
-            } else {
-                this.chooseVideo();
-            }
-        },
-        //发一条动态
-        makeATweet() {
-            console.log(this.text, this.topic, this.img, this.video);
-            if (!this.text && this.imgs.length === 0 && !this.video) {
-
-                wx.showToast({
-                    title: '至少填写文字/图片/视频中的一项',
-                    icon: 'none'
-                })
-            } else {
-                wx.showLoading({
-                    title: '加载中',
-                })
-                // 模拟请求
-                const timer = setTimeout(() => {
-                    wx.hideLoading();
-                    this.$back();
-                }, 500)
-            }
-        },
-    },
-    onLoad({
-        type,
-        topic
-    }) {
-        console.log(type);
-        if (type) {
-            this.type = type;
-            if (type === 'img') {
-                //进入页面时 已经选好 媒体类型，显示选择框
-                this.chooseImg();
-            } else if (type == 'video') this.chooseVideo();
+          }
+        } catch (err) {
+          console.log(err);
+          wx.showToast({
+            title: '创建失败,请重试',
+            icon: 'none',
+          });
         }
-        if (topic) {
-            this.topics.push(topic);
-        }
+      }
     },
+  },
+  onLoad({ type, topic }) {
+    this.getTopics();
+    console.log(type);
+    if (type) {
+      this.type = type;
+      if (type === 'img') {
+        //进入页面时 已经选好 媒体类型，显示选择框
+        this.chooseImg();
+      } else if (type == 'video') this.chooseVideo();
+    }
+    if (topic) {
+      this.topics.push(topic);
+    }
+    wx.cloud.init();
+  },
 });
 </script>
 <config>

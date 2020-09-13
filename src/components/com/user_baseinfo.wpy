@@ -1,32 +1,71 @@
 <template>
   <view class="user_baseinfo">
     <view class="avatar">
-      <image :src="userinfo.avatar||defaultAvatar" @tap="$emit('avatarTap',userinfo.avatar)"></image>
+      <image
+        :src="userinfo.avatar"
+        @tap="$emit('avatarTap',userinfo.avatar)"
+      ></image>
     </view>
     <view class="baseinfo">
       <van-row class="row">
-        <van-col span="8" offset="2">昵称 :</van-col>
-        <van-col span="13" class="data" offset="1">{{ userinfo.name }}</van-col>
+        <van-col
+          span="8"
+          offset="2"
+        >昵称 :</van-col>
+        <van-col
+          span="13"
+          class="data"
+          offset="1"
+        >{{ userinfo.name}}</van-col>
       </van-row>
       <van-row>
-        <van-col span="8" offset="2">性别 :</van-col>
-        <van-col span="13" class="data" offset="1">{{ userinfo.sex }}</van-col>
+        <van-col
+          span="8"
+          offset="2"
+        >性别 :</van-col>
+        <van-col
+          span="13"
+          class="data"
+          offset="1"
+        >{{ userinfo.sex===1?'男':'女'  }}</van-col>
       </van-row>
       <van-row>
-        <van-col span="8" offset="2">个性签名 :</van-col>
-        <van-col span="13" class="data" offset="1">{{
+        <van-col
+          span="8"
+          offset="2"
+        >个性签名 :</van-col>
+        <van-col
+          span="13"
+          class="data"
+          offset="1"
+        >{{
           userinfo.signature
         }}</van-col>
       </van-row>
       <van-row>
-        <van-col span="8" offset="2">学校 :</van-col>
-        <van-col span="13" class="data" offset="1">{{
+        <van-col
+          span="8"
+          offset="2"
+        >学校 :</van-col>
+        <van-col
+          span="13"
+          class="data"
+          offset="1"
+        >{{
           userinfo.campus
         }}</van-col>
       </van-row>
     </view>
-    <view class="btn" v-if="mode==='my'">
-      <van-icon name="edit" size="40rpx" color="#fff" @tap="$emit('edit')"></van-icon>
+    <view
+      class="btn"
+      v-if="mode==='my'"
+    >
+      <van-icon
+        name="edit"
+        size="40rpx"
+        color="#fff"
+        @tap="$emit('edit')"
+      ></van-icon>
     </view>
   </view>
 </template>
@@ -71,6 +110,7 @@
 </style>
 <script>
 import wepy from '@wepy/core';
+
 wepy.component({
   props: {
     userinfo: {
@@ -83,8 +123,7 @@ wepy.component({
     },
   },
   data: {
-    //默认头像
-    defaultAvatar:'https://ftp.bmp.ovh/imgs/2020/07/992030ed118de088.png'
+
   },
 });
 </script>

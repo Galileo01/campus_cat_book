@@ -6,7 +6,7 @@
     class="enlarge_img"
   >
     <view class="preview">
-      <image :src="imgSrc"></image>
+      <image :src="imgSrc" class="img"></image>
       <view class="download">
         <van-icon name="down" size="40rpx" color="#fff" @tap="downloadImg" />
       </view>

@@ -1,217 +1,258 @@
 <template>
-<view class="feedback container">
+  <view class="feedback container">
     <view class="bugs">
-        <view class="bug-item" v-for="(item, index) in feedbacks" :key="index" @tap="$navigate('/pages/feedback_detail?id=' + item.fbid)">
-            <view class="title">{{ item.title }}</view>
-            <view class="footer">
-                <view class="time">{{ item.time }}</view>
-                <view class="state">
-                    <van-tag :type="item.state ? 'primary' : 'danger'">{{
+      <view
+        class="bug-item"
+        v-for="(item, index) in feedbacks"
+        :key="index"
+        @tap="$navigate('/pages/feedback_detail?id=' + item._id)"
+      >
+        <view class="title">{{ item.title }}</view>
+        <view class="footer">
+          <view class="time">{{ item.time }}</view>
+          <view class="state">
+            <van-tag :type="item.state ? 'success' : 'danger'">{{
               item.state ? '已处理' : '未处理'
             }}</van-tag>
-                </view>
-            </view>
+          </view>
         </view>
+      </view>
     </view>
     <view class="btn">
-        <van-button type="info" icon="edit" size="small" round @tap="inputVisible = true" color="#409EFF"></van-button>
+      <van-button
+        type="info"
+        icon="edit"
+        size="small"
+        round
+        @tap="inputVisible = true"
+        color="#409EFF"
+      ></van-button>
     </view>
-    <van-popup :show="inputVisible" position="bottom" custom-style="height: 100%;" closeable @close="closeInput" class="input-popup">
-        <view class="wapper">
-            <view class="form">
-                <view class="form-item">
-                    <text>标题</text>
-                    <van-field placeholder="请输入标题、最多20字" placeholder-style="font-size:12px" :maxlength="20" required clearable focus @input="inputHandle($event, 'title')" :value="formData.title"></van-field>
-                </view>
-                <view class="form-item content">
-                    <text>反馈或问题描述</text>
-                    <van-field placeholder-style="font-size:12px" :maxlength="200" type="textarea" autosize clearable required @input="inputHandle($event, 'content')" :value="formData.content"></van-field>
-                </view>
-                <view class="form-item">
-                    <text>图片材料(最多3张\选填)</text>
-                    <view class="imgs">
-                        <image v-for="item in formData.imgs" :src="item"></image>
-                        <van-icon name="add-o" size="100rpx" @tap="chooseImg" color="#409EFF"></van-icon>
-                    </view>
-                </view>
-                <view class="form-item connect">
-                    <text>邮箱</text>
-                    <van-field placeholder-style="font-size:12px" :value="formData.connect" :maxlength="20" required clearable focus @input="inputHandle($event, 'connect')"></van-field>
-                </view>
+    <van-popup
+      :show="inputVisible"
+      position="bottom"
+      custom-style="height: 100%;"
+      closeable
+      @close="closeInput"
+      class="input-popup"
+    >
+      <view class="wapper">
+        <view class="form">
+          <view class="form-item">
+            <text>标题</text>
+            <van-field
+              placeholder="请输入标题、最多20字"
+              placeholder-style="font-size:12px"
+              :maxlength="20"
+              required
+              clearable
+              focus
+              @input="inputHandle($event, 'title')"
+              :value="formData.title"
+            ></van-field>
+          </view>
+          <view class="form-item content">
+            <text>反馈或问题描述</text>
+            <van-field
+              placeholder-style="font-size:12px"
+              :maxlength="200"
+              type="textarea"
+              autosize
+              clearable
+              required
+              @input="inputHandle($event, 'content')"
+              :value="formData.content"
+            ></van-field>
+          </view>
+          <view class="form-item">
+            <text>图片材料(最多3张\选填)</text>
+            <view class="imgs">
+              <image
+                v-for="item in formData.imgs"
+                :src="item"
+              ></image>
+              <van-icon
+                name="add-o"
+                size="100rpx"
+                @tap="chooseImg"
+                color="#409EFF"
+              ></van-icon>
             </view>
-            <view class="btns">
-                <van-button size="small" type="danger" color="#F56C6C" @tap="closeInput">取消</van-button>
-                <van-button size="small" type="info" color="#409EFF" @tap="submit">提交</van-button>
-            </view>
+          </view>
+
         </view>
+        <view class="btns">
+          <van-button
+            size="small"
+            type="danger"
+            color="#F56C6C"
+            @tap="closeInput"
+          >取消</van-button>
+          <van-button
+            size="small"
+            type="info"
+            color="#409EFF"
+            @tap="submit"
+          >提交</van-button>
+        </view>
+      </view>
     </van-popup>
 
-</view>
+  </view>
 </template>
 
 <style lang="less">
 .mt10 {
-    margin-top: 20rpx;
+  margin-top: 20rpx;
 }
 
 .feedback {
-    .bugs {
+  .bugs {
+    .mt10();
+
+    .bug-item {
+      width: 84%;
+      margin: 0 auto;
+      -webkit-box-shadow: 0 0 10px #ddd;
+      box-shadow: 0 0 10px #ddd;
+      padding: 20rpx;
+      border-radius: 10rpx;
+      .mt10();
+
+      .footer {
         .mt10();
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
 
-        .bug-item {
-            width: 84%;
-            margin: 0 auto;
-            -webkit-box-shadow: 0 0 10px #ddd;
-            box-shadow: 0 0 10px #ddd;
-            padding: 20rpx;
-            border-radius: 10rpx;
-            .mt10();
-
-            .footer {
-                .mt10();
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-
-                .time {
-                    color: #a497a6;
-                    font-size: 10px;
-                }
-            }
+        .time {
+          color: #a497a6;
+          font-size: 10px;
         }
+      }
+    }
+  }
+
+  .btn {
+    position: absolute;
+    bottom: 30rpx;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .wapper {
+    padding: 40rpx 20rpx 0 20rpx;
+
+    .form-item {
+      .mt10();
     }
 
-    .btn {
-        position: absolute;
-        bottom: 30rpx;
-        left: 50%;
-        transform: translateX(-50%);
+    .content {
+      height: 300rpx;
     }
 
-    .wapper {
-        padding: 40rpx 20rpx 0 20rpx;
+    .imgs {
+      .mt10();
+      display: flex;
+      align-items: flex-start;
+      height: 200rpx;
 
-        .form-item {
-            .mt10();
-        }
-
-        .content {
-            height: 300rpx;
-        }
-
-        .imgs {
-            .mt10();
-            display: flex;
-            align-items: flex-start;
-            height: 200rpx;
-
-            image {
-                width: 30vw;
-                height: 30vw;
-                margin-left: 10rpx;
-            }
-        }
-
-        .btns {
-            position: absolute;
-            bottom: 20rpx;
-            width: 60%;
-            display: flex;
-            justify-content: space-between;
-            left: 50%;
-            transform: translateX(-50%);
-        }
+      image {
+        width: 30vw;
+        height: 30vw;
+        margin-left: 10rpx;
+      }
     }
+
+    .btns {
+      position: absolute;
+      bottom: 20rpx;
+      width: 60%;
+      display: flex;
+      justify-content: space-between;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
 }
 </style>
 
 <script>
 import wepy from '@wepy/core';
+import { getMyFeedbacks, create } from 'network/feedback';
 wepy.page({
-    data: {
-        feedbacks: [],
-        inputVisible: false,
-        formData: {
-            title: '',
-            content: '',
-            imgs: [],
-            connect: '',
-            connectType: 'tel',
-        },
+  data: {
+    feedbacks: [],
+    inputVisible: false,
+    formData: {
+      title: '',
+      content: '',
+      imgs: [],
     },
-    methods: {
-        getData() {
-            const data = [{
-                    title: '视频无法预览',
-                    content: '动态发布页面，视频选择后无法预览',
-                    imgs: [],
-                    connect: '', //联系方式
-                    time: '2020 0705',
-                    state: 0, //当前状态
-                    userID: 1,
-                    fbid: 0,
-                },
-                {
-                    title: '视频无法预览',
-                    content: '动态发布页面，视频选择后无法预览',
-                    imgs: [],
-                    connect: '', //联系方式
-                    time: '2020 0705',
-                    state: 1, //当前状态
-                    userID: 1,
-                    fbid: 1,
-                },
-            ];
-            this.feedbacks = data;
-        },
-        inputHandle({
-            $wx: {
-                detail
-            }
-        }, key) {
-            console.log(detail, key);
-            this.formData[key] = detail;
-        },
-        closeInput() {
-            this.inputVisible = false;
-            this.formData = {
-                title: '',
-                content: '',
-                imgs: [],
-                connect: '',
-            };
-        },
-        chooseImg() {
-            const self = this;
-            wx.chooseImage({
-                sizeType: ['original'],
-                sourceType: ['camera', 'album'],
-                success(res) {
-                    const tempFiles = res.tempFilePaths;
-                    console.log(res, tempFiles);
-                    self.formData.imgs = tempFiles;
-                },
-            });
-        },
-        submit() {
+  },
+  methods: {
+    async getData() {
+      const res = await getMyFeedbacks();
+      if (!res.data) {
+        return wx.showToast({
+          title: '数据为空，请重试',
+          icon: 'none',
+        });
+      }
 
-            wx.showLoading({
-                title: '提交中'
-            })
-            //请求成功 后关闭，模拟
-            const timer = setTimeout(() => {
-                wx.hideLoading();
-                clearTimeout(timer);
-                this.getData(); //刷新数据
-                this.closeInput();
-            }, 500);
+      this.feedbacks = res.data;
+    },
+    inputHandle({ $wx: { detail } }, key) {
+      console.log(detail, key);
+      this.formData[key] = detail;
+    },
+    closeInput() {
+      this.inputVisible = false;
+      this.formData = {
+        title: '',
+        content: '',
+        imgs: [],
+        connect: '',
+      };
+    },
+    chooseImg() {
+      const self = this;
+      wx.chooseImage({
+        sizeType: ['original'],
+        sourceType: ['camera', 'album'],
+        success(res) {
+          const tempFiles = res.tempFilePaths;
+          console.log(res, tempFiles);
+          self.formData.imgs = tempFiles;
         },
+      });
     },
-    onLoad() {
-        wx.showNavigationBarLoading();
-        this.getData();
-        wx.hideNavigationBarLoading();
+    //提交
+    async submit() {
+      try {
+        wx.showLoading({
+          title: '提交中',
+        });
+        const res = await create(this.formData);
+        console.log(res);
+        wx.hideLoading();
+        this.$back();
+      } catch (err) {
+        wx.hideLoading({
+          complete() {
+            wx.showToast({
+              title: '创建失败，请重试',
+            });
+          },
+        });
+      }
     },
+  },
+  onLoad() {
+    wx.showNavigationBarLoading();
+    this.getData();
+    wx.hideNavigationBarLoading();
+  },
 });
 </script>
 

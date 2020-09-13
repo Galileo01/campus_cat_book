@@ -368,10 +368,8 @@ wepy.page({
   onLoad({ id }) {
     console.log(id);
     this.id = id;
-    wx.showNavigationBarLoading();
     this.getTweetInfo();
     this.getComments();
-    wx.hideNavigationBarLoading();
   },
   onShow() {
     //保证 当前 页面使用的用户数据是最新的

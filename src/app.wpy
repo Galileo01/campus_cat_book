@@ -16,15 +16,14 @@ wepy.app({});
 <config>
 {
     pages: [
-        'pages/index',    
+      'pages/index',    
       'pages/profile',
-       'pages/feedback',
-     'pages/right_apply',
-       'pages/feedback_detail',
+      'pages/feedback',
+      'pages/right_apply',
+      'pages/feedback_detail',
       'pages/user_more_data',
       'pages/community',
       'pages/userinfo',
-     
       'pages/catdetail',
       'pages/tweet_detail',
       'pages/createtweet_page',

@@ -1,15 +1,14 @@
 import httpIns from './index'
-
+import { uploader } from 'common/utils';//引入 上传器
 //用户登录
 export function login(userinfo) {
     return httpIns.post('/user/login', userinfo)
 }
 
 //获取用户信息
-export function getInfo() {
-    return httpIns.get('/user/getInfo', {
-        name: wx.getStorageSync('nickName')
-    })
+export function getInfo(_id) {
+    let params = _id ? { _id } : { name: wx.getStorageSync('nickName') };//优先使用id 获取其他用户的信息
+    return httpIns.get('/user/getInfo', params)
 }
 
 //注意 preName 参数
@@ -18,8 +17,17 @@ export function updateInfo(userinfo) {
 }
 
 //更新用户头像  测试
-export function updateAvatar(formData) {
-    return httpIns.post('/user/updateAvatar', formData)
+export async function updateAvatar(filePath) {
+    // return httpIns.post('/user/updateAvatar', formData)
+    const res = await uploader({
+        url: httpIns.baseURL + '/user/updateAvatar',
+        filePath,
+        name: 'avatar',
+        formData: {
+            name: wx.getStorageSync('nickName')
+        }
+    })
+    return res.substring(res.indexOf(':') + 2, res.indexOf('}') - 1);
 }
 
 
@@ -44,17 +52,25 @@ export function cancelCollectTweet(tweetId) {
 
 
 //获取收藏的 猫猫列表
-export function getColectedCats(offset, limit ) {
+export function getColectedCats(_id) {
+    let params = _id ? { _id } : { name: wx.getStorageSync('nickName') };//优先使用id 获取其他用户的信息
     return httpIns.get('/user/getCats_co', {
-        name: wx.getStorageSync('nickName'),
-        offset, limit
+        ...params,
+
     })
 }
 
 //获取收藏的动态
-export function getColectedTweets(offset, limit ) {
+export function getColectedTweets(_id) {
+    let params = _id ? { _id } : { name: wx.getStorageSync('nickName') };//优先使用id 获取其他用户的信息
     return httpIns.get('/user/getTweets_co', {
-        name: wx.getStorageSync('nickName'),
-        offset, limit
+        ...params
+
     })
+}
+
+
+//获取由 用户收藏猫猫生成的 话题列表
+export function getUserTopics() {
+    return httpIns.get('/user/getMyTopics', { user: wx.getStorageSync('nickName') })
 }
